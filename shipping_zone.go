@@ -97,3 +97,7 @@ func (s *ShippingZoneServiceOp) List(ctx context.Context) ([]ShippingZone, error
     err := s.client.Get(ctx, "shipping_zones.json", resource, nil)
     return resource.ShippingZones, err
 }
+
+func NewShippingZoneService(client ClientInterface) ShippingZoneService {
+    return &ShippingZoneServiceOp{client}
+}

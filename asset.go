@@ -88,3 +88,7 @@ func (s *AssetServiceOp) Delete(ctx context.Context, themeId uint64, key string)
     path := fmt.Sprintf("%s/%d/assets.json?asset[key]=%s", assetsBasePath, themeId, key)
     return s.client.Delete(ctx, path)
 }
+
+func NewAssetService(client ClientInterface) AssetService {
+    return &AssetServiceOp{client}
+}

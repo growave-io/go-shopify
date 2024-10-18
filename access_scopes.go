@@ -34,3 +34,7 @@ func (s *AccessScopesServiceOp) List(ctx context.Context, options interface{}) (
     err = s.client.Do(req, resource)
     return resource.AccessScopes, err
 }
+
+func NewAccessScopesService(client ClientInterface) AccessScopesService {
+    return &AccessScopesServiceOp{client}
+}

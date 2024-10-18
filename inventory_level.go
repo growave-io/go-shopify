@@ -94,3 +94,7 @@ func (s *InventoryLevelServiceOp) post(ctx context.Context, path string, options
     err := s.client.Post(ctx, path, options, resource)
     return resource.InventoryLevel, err
 }
+
+func NewInventoryLevelService(client ClientInterface) InventoryLevelService {
+    return &InventoryLevelServiceOp{client}
+}

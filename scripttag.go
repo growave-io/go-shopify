@@ -105,3 +105,7 @@ func (s *ScriptTagServiceOp) Update(ctx context.Context, tag ScriptTag) (*Script
 func (s *ScriptTagServiceOp) Delete(ctx context.Context, tagId uint64) error {
     return s.client.Delete(ctx, fmt.Sprintf("%s/%d.json", scriptTagsBasePath, tagId))
 }
+
+func NewScriptTagService(client ClientInterface) ScriptTagService {
+    return &ScriptTagServiceOp{client}
+}

@@ -147,3 +147,7 @@ func (s *SmartCollectionServiceOp) DeleteMetafield(ctx context.Context, smartCol
     metafieldService := &MetafieldServiceOp{client: s.client, resource: smartCollectionsResourceName, resourceId: smartCollectionId}
     return metafieldService.Delete(ctx, metafieldId)
 }
+
+func NewSmartCollectionService(client ClientInterface) SmartCollectionService {
+    return &SmartCollectionServiceOp{client}
+}

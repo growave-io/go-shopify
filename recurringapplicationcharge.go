@@ -183,3 +183,7 @@ func (r *RecurringApplicationChargeServiceOp) Update(ctx context.Context, charge
     err := r.client.Put(ctx, path, nil, resource)
     return resource.Charge, err
 }
+
+func NewRecurringApplicationChargeService(client ClientInterface) RecurringApplicationChargeService {
+    return &RecurringApplicationChargeServiceOp{client}
+}

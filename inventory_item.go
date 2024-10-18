@@ -73,3 +73,7 @@ func (s *InventoryItemServiceOp) Update(ctx context.Context, item InventoryItem)
     err := s.client.Put(ctx, path, wrappedData, resource)
     return resource.InventoryItem, err
 }
+
+func NewInventoryItemService(client ClientInterface) InventoryItemService {
+    return &InventoryItemServiceOp{client}
+}

@@ -64,3 +64,7 @@ func (s *StorefrontAccessTokenServiceOp) Create(ctx context.Context, storefrontA
 func (s *StorefrontAccessTokenServiceOp) Delete(ctx context.Context, Id uint64) error {
     return s.client.Delete(ctx, fmt.Sprintf("%s/%d.json", storefrontAccessTokensBasePath, Id))
 }
+
+func NewStorefrontAccessTokenService(client ClientInterface) *StorefrontAccessTokenServiceOp {
+    return &StorefrontAccessTokenServiceOp{client}
+}

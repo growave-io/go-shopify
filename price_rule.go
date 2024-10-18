@@ -197,3 +197,7 @@ func validateMoney(v string) bool {
     _, err := decimal.NewFromString(v)
     return err == nil
 }
+
+func NewPriceRuleService(client ClientInterface) PriceRuleService {
+    return &PriceRuleServiceOp{client}
+}

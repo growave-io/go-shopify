@@ -95,3 +95,7 @@ func (s *FulfillmentServiceServiceOp) Delete(ctx context.Context, fulfillmentSer
     path := fmt.Sprintf("%s/%d.json", fulfillmentServiceBasePath, fulfillmentServiceId)
     return s.client.Delete(ctx, path)
 }
+
+func NewFulfillmentServiceService(client ClientInterface) FulfillmentServiceService {
+    return &FulfillmentServiceServiceOp{client}
+}

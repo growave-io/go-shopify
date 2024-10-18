@@ -282,3 +282,7 @@ func (s *FulfillmentOrderServiceOp) Move(ctx context.Context, fulfillmentId uint
     err := s.client.Post(ctx, path, wrappedRequest, resource)
     return resource, err
 }
+
+func NewFulfillmentOrderService(client ClientInterface) FulfillmentOrderService {
+    return &FulfillmentOrderServiceOp{client}
+}

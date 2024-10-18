@@ -135,3 +135,7 @@ func (s *ArticlesServiceOp) ListBlogTags(ctx context.Context, blogId uint64, opt
     err := s.client.Get(ctx, path, &articleTags, options)
     return articleTags.Tags, err
 }
+
+func NewArticlesService(client ClientInterface) ArticlesService {
+    return &ArticlesServiceOp{client}
+}

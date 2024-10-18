@@ -177,3 +177,7 @@ func (s *VariantServiceOp) DeleteMetafield(ctx context.Context, variantId uint64
     metafieldService := &MetafieldServiceOp{client: s.client, resource: variantsResourceName, resourceId: variantId}
     return metafieldService.Delete(ctx, metafieldId)
 }
+
+func NewVariantService(client ClientInterface) VariantService {
+    return &VariantServiceOp{client}
+}

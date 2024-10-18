@@ -837,3 +837,7 @@ func (s *OrderServiceOp) CancelFulfillment(ctx context.Context, orderId uint64, 
     fulfillmentService := &FulfillmentServiceOp{client: s.client, resource: ordersResourceName, resourceId: orderId}
     return fulfillmentService.Cancel(ctx, fulfillmentId)
 }
+
+func NewOrderService(client ClientInterface) OrderService {
+    return &OrderServiceOp{client: client}
+}

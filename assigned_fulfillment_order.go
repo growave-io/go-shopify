@@ -78,3 +78,7 @@ func (s *AssignedFulfillmentOrderServiceOp) Get(ctx context.Context, options int
     err := s.client.Get(ctx, path, resource, options)
     return resource.AssignedFulfillmentOrders, err
 }
+
+func NewAssignedFulfillmentOrderService(client ClientInterface) AssignedFulfillmentOrderService {
+    return &AssignedFulfillmentOrderServiceOp{client}
+}

@@ -151,3 +151,7 @@ func (s *OrderRiskServiceOp) Delete(ctx context.Context, orderId uint64, riskId 
     err := s.client.Delete(ctx, path)
     return err
 }
+
+func NewOrderRiskService(client ClientInterface) OrderRiskService {
+    return &OrderRiskServiceOp{client}
+}

@@ -148,3 +148,7 @@ func (c GraphQLCost) RetryAfterSeconds() float64 {
 
     return 0
 }
+
+func NewGraphQLService(client ClientInterface) GraphQLService {
+    return &GraphQLServiceOp{client}
+}

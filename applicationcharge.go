@@ -78,3 +78,7 @@ func (a ApplicationChargeServiceOp) Activate(ctx context.Context, charge Applica
     resource := &ApplicationChargeResource{}
     return resource.Charge, a.client.Post(ctx, path, ApplicationChargeResource{Charge: &charge}, resource)
 }
+
+func NewApplicationChargeService(client ClientInterface) ApplicationChargeService {
+    return &ApplicationChargeServiceOp{client}
+}

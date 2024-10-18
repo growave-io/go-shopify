@@ -71,3 +71,7 @@ func (s *CollectionServiceOp) ListProductsWithPagination(ctx context.Context, co
 
     return resource.Products, pagination, nil
 }
+
+func NewCollectionService(client ClientInterface) CollectionService {
+    return &CollectionServiceOp{client}
+}

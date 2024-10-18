@@ -80,3 +80,7 @@ func (r *UsageChargeServiceOp) List(ctx context.Context, chargeId uint64, option
     err := r.client.Get(ctx, path, resource, options)
     return resource.Charges, err
 }
+
+func NewUsageChargeService(client ClientInterface) UsageChargeService {
+    return &UsageChargeServiceOp{client}
+}

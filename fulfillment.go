@@ -172,3 +172,7 @@ func (s *FulfillmentServiceOp) Cancel(ctx context.Context, fulfillmentId uint64)
     err := s.client.Post(ctx, path, nil, resource)
     return resource.Fulfillment, err
 }
+
+func NewFulfillmentService(client ClientInterface) FulfillmentService {
+    return &FulfillmentServiceOp{client: client}
+}

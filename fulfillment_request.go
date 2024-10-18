@@ -71,3 +71,7 @@ func (s *FulfillmentRequestServiceOp) Reject(ctx context.Context, fulfillmentOrd
     err := s.client.Post(ctx, path, wrappedData, resource)
     return resource.FulfillmentOrder, err
 }
+
+func NewFulfillmentRequestService(client ClientInterface) FulfillmentRequestService {
+    return &FulfillmentRequestServiceOp{client}
+}

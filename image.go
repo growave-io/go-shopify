@@ -107,3 +107,7 @@ func (s *ImageServiceOp) Update(ctx context.Context, productId uint64, image Ima
 func (s *ImageServiceOp) Delete(ctx context.Context, productId uint64, imageId uint64) error {
     return s.client.Delete(ctx, fmt.Sprintf("%s/%d/images/%d.json", productsBasePath, productId, imageId))
 }
+
+func NewImageService(client ClientInterface) ImageService {
+    return &ImageServiceOp{client}
+}

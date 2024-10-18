@@ -139,3 +139,7 @@ func (s *CustomCollectionServiceOp) DeleteMetafield(ctx context.Context, customC
     metafieldService := &MetafieldServiceOp{client: s.client, resource: customCollectionsResourceName, resourceId: customCollectionId}
     return metafieldService.Delete(ctx, metafieldId)
 }
+
+func NewCustomCollectionService(client ClientInterface) CustomCollectionService {
+    return &CustomCollectionServiceOp{client}
+}

@@ -156,3 +156,7 @@ func (s *ProductListingServiceOp) Publish(ctx context.Context, productId uint64)
 func (s *ProductListingServiceOp) Delete(ctx context.Context, productId uint64) error {
     return s.client.Delete(ctx, fmt.Sprintf("%s/%d.json", productListingBasePath, productId))
 }
+
+func NewProductListingService(client ClientInterface) ProductListingService {
+    return &ProductListingServiceOp{client}
+}

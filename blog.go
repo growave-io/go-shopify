@@ -96,3 +96,7 @@ func (s *BlogServiceOp) Update(ctx context.Context, blog Blog) (*Blog, error) {
 func (s *BlogServiceOp) Delete(ctx context.Context, blogId uint64) error {
     return s.client.Delete(ctx, fmt.Sprintf("%s/%d.json", blogsBasePath, blogId))
 }
+
+func NewBlogService(client ClientInterface) BlogService {
+    return &BlogServiceOp{client}
+}

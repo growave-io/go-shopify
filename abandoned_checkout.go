@@ -90,3 +90,7 @@ func (s *AbandonedCheckoutServiceOp) List(ctx context.Context, options interface
     err := s.client.Get(ctx, path, resource, options)
     return resource.AbandonedCheckouts, err
 }
+
+func NewAbandonedCheckoutService(client ClientInterface) AbandonedCheckoutService {
+    return &AbandonedCheckoutServiceOp{client: client}
+}

@@ -151,3 +151,7 @@ type LocationResource struct {
 type LocationsResource struct {
     Locations []Location `json:"locations"`
 }
+
+func NewLocationService(client ClientInterface) LocationService {
+    return &LocationServiceOp{client}
+}

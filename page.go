@@ -141,3 +141,7 @@ func (s *PageServiceOp) DeleteMetafield(ctx context.Context, pageId uint64, meta
     metafieldService := &MetafieldServiceOp{client: s.client, resource: pagesResourceName, resourceId: pageId}
     return metafieldService.Delete(ctx, metafieldId)
 }
+
+func NewPageService(client ClientInterface) PageService {
+    return &PageServiceOp{client}
+}

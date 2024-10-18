@@ -110,3 +110,7 @@ func (s *GiftCardServiceOp) Count(ctx context.Context, options interface{}) (int
     path := fmt.Sprintf("%s/count.json", giftCardsBasePath)
     return s.client.Count(ctx, path, options)
 }
+
+func NewGiftCardService(client ClientInterface) GiftCardService {
+    return &GiftCardServiceOp{client}
+}

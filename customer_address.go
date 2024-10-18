@@ -91,3 +91,7 @@ func (s *CustomerAddressServiceOp) Update(ctx context.Context, customerId uint64
 func (s *CustomerAddressServiceOp) Delete(ctx context.Context, customerId, addressId uint64) error {
     return s.client.Delete(ctx, fmt.Sprintf("%s/%d/addresses/%d.json", customersBasePath, customerId, addressId))
 }
+
+func NewCustomerAddressService(client ClientInterface) CustomerAddressService {
+    return &CustomerAddressServiceOp{client}
+}

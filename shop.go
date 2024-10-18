@@ -124,3 +124,7 @@ func (s *ShopServiceOp) DeleteMetafield(ctx context.Context, _ uint64, metafield
     metafieldService := &MetafieldServiceOp{client: s.client, resource: shopResourceName}
     return metafieldService.Delete(ctx, metafieldId)
 }
+
+func NewShopService(client ClientInterface) ShopService {
+    return &ShopServiceOp{client}
+}

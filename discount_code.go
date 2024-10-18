@@ -83,3 +83,7 @@ func (s *DiscountCodeServiceOp) Get(ctx context.Context, priceRuleId uint64, dis
 func (s *DiscountCodeServiceOp) Delete(ctx context.Context, priceRuleId uint64, discountCodeId uint64) error {
     return s.client.Delete(ctx, fmt.Sprintf(discountCodeBasePath+"/%d.json", priceRuleId, discountCodeId))
 }
+
+func NewDiscountCodeService(client ClientInterface) DiscountCodeService {
+    return &DiscountCodeServiceOp{client}
+}

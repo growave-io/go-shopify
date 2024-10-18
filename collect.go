@@ -82,3 +82,7 @@ func (s *CollectServiceOp) Create(ctx context.Context, collect Collect) (*Collec
 func (s *CollectServiceOp) Delete(ctx context.Context, collectId uint64) error {
     return s.client.Delete(ctx, fmt.Sprintf("%s/%d.json", collectsBasePath, collectId))
 }
+
+func NewCollectService(client ClientInterface) CollectService {
+    return &CollectServiceOp{client}
+}

@@ -86,3 +86,7 @@ func (s *RedirectServiceOp) Update(ctx context.Context, redirect Redirect) (*Red
 func (s *RedirectServiceOp) Delete(ctx context.Context, redirectId uint64) error {
     return s.client.Delete(ctx, fmt.Sprintf("%s/%d.json", redirectsBasePath, redirectId))
 }
+
+func NewRedirectService(client ClientInterface) RedirectService {
+    return &RedirectServiceOp{client}
+}

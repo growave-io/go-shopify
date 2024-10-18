@@ -93,3 +93,7 @@ func (s *ThemeServiceOp) Delete(ctx context.Context, themeId uint64) error {
     path := fmt.Sprintf("%s/%d.json", themesBasePath, themeId)
     return s.client.Delete(ctx, path)
 }
+
+func NewThemeService(client ClientInterface) ThemeService {
+    return &ThemeServiceOp{client}
+}

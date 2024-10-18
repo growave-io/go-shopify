@@ -169,3 +169,7 @@ func (s *MetafieldServiceOp) Delete(ctx context.Context, metafieldId uint64) err
     prefix := MetafieldPathPrefix(s.resource, s.resourceId)
     return s.client.Delete(ctx, fmt.Sprintf("%s/%d.json", prefix, metafieldId))
 }
+
+func NewMetafieldService(client ClientInterface) MetafieldService {
+    return &MetafieldServiceOp{client: client}
+}

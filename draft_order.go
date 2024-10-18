@@ -217,3 +217,7 @@ func (s *DraftOrderServiceOp) DeleteMetafield(ctx context.Context, draftOrderId 
     metafieldService := &MetafieldServiceOp{client: s.client, resource: draftOrdersResourceName, resourceId: draftOrderId}
     return metafieldService.Delete(ctx, metafieldId)
 }
+
+func NewDraftOrderService(client ClientInterface) DraftOrderService {
+    return &DraftOrderServiceOp{client}
+}

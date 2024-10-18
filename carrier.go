@@ -174,3 +174,7 @@ func (s *CarrierServiceOp) Update(ctx context.Context, carrier CarrierService) (
 func (s *CarrierServiceOp) Delete(ctx context.Context, id uint64) error {
     return s.client.Delete(ctx, fmt.Sprintf("%s/%d.json", carrierBasePath, id))
 }
+
+func NewCarrierService(client ClientInterface) CarrierServiceService {
+    return &CarrierServiceOp{client}
+}

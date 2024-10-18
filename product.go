@@ -238,3 +238,7 @@ func (s *ProductServiceOp) DeleteMetafield(ctx context.Context, productId uint64
     metafieldService := &MetafieldServiceOp{client: s.client, resource: productsResourceName, resourceId: productId}
     return metafieldService.Delete(ctx, metafieldId)
 }
+
+func NewProductService(client ClientInterface) ProductService {
+    return &ProductServiceOp{client: client}
+}

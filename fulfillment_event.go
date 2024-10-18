@@ -88,3 +88,7 @@ func (s *FulfillmentEventServiceOp) Delete(ctx context.Context, orderId uint64, 
     path := fmt.Sprintf("%s/%d/fulfillments/%d/events/%d.json", fulfillmentEventBasePath, orderId, fulfillmentId, eventId)
     return s.client.Delete(ctx, path)
 }
+
+func NewFulfillmentEventService(client ClientInterface) FulfillmentEventService {
+    return &FulfillmentEventServiceOp{client}
+}

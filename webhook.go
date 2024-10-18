@@ -100,3 +100,7 @@ func (s *WebhookServiceOp) Update(ctx context.Context, webhook Webhook) (*Webhoo
 func (s *WebhookServiceOp) Delete(ctx context.Context, Id uint64) error {
     return s.client.Delete(ctx, fmt.Sprintf("%s/%d.json", webhooksBasePath, Id))
 }
+
+func NewWebhookService(client ClientInterface) WebhookService {
+    return &WebhookServiceOp{client}
+}

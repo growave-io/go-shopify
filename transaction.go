@@ -61,3 +61,7 @@ func (s *TransactionServiceOp) Create(ctx context.Context, orderId uint64, trans
     err := s.client.Post(ctx, path, wrappedData, resource)
     return resource.Transaction, err
 }
+
+func NewTransactionService(client ClientInterface) *TransactionServiceOp {
+    return &TransactionServiceOp{client}
+}

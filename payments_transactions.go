@@ -131,3 +131,7 @@ func (s *PaymentsTransactionsServiceOp) Get(ctx context.Context, payoutId uint64
     err := s.client.Get(ctx, path, resource, options)
     return resource.PaymentsTransaction, err
 }
+
+func NewPaymentsTransactionsService(client ClientInterface) PaymentsTransactionsService {
+    return &PaymentsTransactionsServiceOp{client}
+}

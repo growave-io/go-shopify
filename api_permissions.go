@@ -25,3 +25,7 @@ func (s *ApiPermissionsServiceOp) Delete(ctx context.Context) error {
     path := fmt.Sprintf("%s/current.json", apiPermissionsBasePath)
     return s.client.Delete(ctx, path)
 }
+
+func NewApiPermissionsService(client ClientInterface) *ApiPermissionsServiceOp {
+    return &ApiPermissionsServiceOp{client: client}
+}
