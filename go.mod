@@ -1,4 +1,4 @@
-module github.com/growave-io/go-shopify/v4
+module github.com/growave-io/go-shopify
 
 go 1.13
 
