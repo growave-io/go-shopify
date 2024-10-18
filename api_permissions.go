@@ -1,8 +1,8 @@
 package goshopify
 
 import (
-	"context"
-	"fmt"
+    "context"
+    "fmt"
 )
 
 const apiPermissionsBasePath = "api_permissions"
@@ -11,17 +11,17 @@ const apiPermissionsBasePath = "api_permissions"
 // permissions endpoints of the Shopify API.
 // See: https://help.shopify.com/api/reference/theme
 type ApiPermissionsService interface {
-	Delete(context.Context) error
+    Delete(context.Context) error
 }
 
 // ApiPermissionsServiceOp handles communication with the theme related methods of
 // the Shopify API.
 type ApiPermissionsServiceOp struct {
-	client *Client
+    client ClientInterface
 }
 
 // Uninstall an app.
 func (s *ApiPermissionsServiceOp) Delete(ctx context.Context) error {
-	path := fmt.Sprintf("%s/current.json", apiPermissionsBasePath)
-	return s.client.Delete(ctx, path)
+    path := fmt.Sprintf("%s/current.json", apiPermissionsBasePath)
+    return s.client.Delete(ctx, path)
 }
