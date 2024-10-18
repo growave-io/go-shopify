@@ -1,4 +1,4 @@
-module github.com/bold-commerce/go-shopify/v4
+module github.com/growave-io/go-shopify/v4
 
 go 1.13
 
