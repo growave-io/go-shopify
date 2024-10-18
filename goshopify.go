@@ -68,6 +68,7 @@ type ClientInterface interface {
     GetRateLimits() *RateLimitInfo
     GetRetries() int
     GetLogger() LeveledLoggerInterface
+    SetLogger(logger LeveledLoggerInterface)
 }
 
 // Client manages communication with the Shopify API.
@@ -809,4 +810,8 @@ func (c *Client) GetRetries() int {
 
 func (c *Client) GetLogger() LeveledLoggerInterface {
     return c.log
+}
+
+func (c *Client) SetLogger(logger LeveledLoggerInterface) {
+    c.log = logger
 }
