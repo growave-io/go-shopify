@@ -16,7 +16,7 @@ func TestGraphQLQuery(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/graphql.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/graphql.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"data":{"foo":"bar"}}`),
 	)
 
@@ -40,7 +40,7 @@ func TestGraphQLQueryWithError(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/graphql.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/graphql.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"errors":[{"message":"oops"}]}`),
 	)
 
@@ -185,7 +185,7 @@ func TestGraphQLQueryWithRetries(t *testing.T) {
 			// used to track retries in case clojure
 			retries = c.retries
 
-			requestURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/graphql.json", client.pathPrefix)
+			requestURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/graphql.json", client.ApiClient.GetPathPrefix())
 
 			httpmock.RegisterResponder(
 				"POST",
@@ -221,7 +221,7 @@ func TestGraphQLQueryWithMultipleErrors(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/graphql.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/graphql.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"errors":[{"message":"oops"},{"message":"I did it again"}]}`),
 	)
 
@@ -243,11 +243,11 @@ func TestGraphQLQueryWithMultipleErrors(t *testing.T) {
 func TestGraphQLQueryWithThrottledError(t *testing.T) {
 	setup()
 	defer teardown()
-	client.retries = 1
+	client.ApiClient.SetRetries(1)
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/graphql.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/graphql.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `
 			{
 				"errors":[{"message":"Throttled","extensions":{"code":"THROTTLED"}}],
@@ -288,12 +288,12 @@ func TestGraphQLQueryWithThrottledError(t *testing.T) {
 		t.Errorf("GraphQL.Query rle.RetryAfter is %d but expected %d", rle.RetryAfter, int(expectedRetryAfterSeconds))
 	}
 
-	if client.RateLimits.GraphQLCost == nil {
+	if client.ApiClient.GetRateLimits().GraphQLCost == nil {
 		t.Errorf("GraphQL.Query should have assigned client.RateLimits.GraphQLCost")
 	}
 
-	if client.RateLimits.RetryAfterSeconds != expectedRetryAfterSeconds {
-		t.Errorf("GraphQL.Query client.RateLimits.RetryAfterSeconds is %f but expected %f", client.RateLimits.RetryAfterSeconds, expectedRetryAfterSeconds)
+	if client.ApiClient.GetRateLimits().RetryAfterSeconds != expectedRetryAfterSeconds {
+		t.Errorf("GraphQL.Query client.RateLimits.RetryAfterSeconds is %f but expected %f", client.ApiClient.GetRateLimits().RetryAfterSeconds, expectedRetryAfterSeconds)
 	}
 }
 

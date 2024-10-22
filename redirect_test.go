@@ -22,7 +22,7 @@ func TestRedirectList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/redirects.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/redirects.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"redirects": [{"id":1},{"id":2}]}`))
 
 	redirects, err := client.Redirect.List(context.Background(), nil)
@@ -40,13 +40,13 @@ func TestRedirectCount(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/redirects/count.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/redirects/count.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"count": 3}`))
 
 	params := map[string]string{"created_at_min": "2016-01-01T00:00:00Z"}
 	httpmock.RegisterResponderWithQuery(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/redirects/count.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/redirects/count.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewStringResponder(200, `{"count": 2}`))
 
@@ -76,7 +76,7 @@ func TestRedirectGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/redirects/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/redirects/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"redirect": {"id":1}}`))
 
 	redirect, err := client.Redirect.Get(context.Background(), 1, nil)
@@ -94,7 +94,7 @@ func TestRedirectCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/redirects.json", client.pathPrefix),
+	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/redirects.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("redirect.json")))
 
 	redirect := Redirect{
@@ -114,7 +114,7 @@ func TestRedirectUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/redirects/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/redirects/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("redirect.json")))
 
 	redirect := Redirect{
@@ -133,7 +133,7 @@ func TestRedirectDelete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/redirects/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/redirects/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, "{}"))
 
 	err := client.Redirect.Delete(context.Background(), 1)

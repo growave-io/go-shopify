@@ -15,7 +15,7 @@ func TestCollectionGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collections/%d.json", client.pathPrefix, 1),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collections/%d.json", client.ApiClient.GetPathPrefix(), 1),
 		httpmock.NewStringResponder(200,
 			`{
 				"collection": {
@@ -74,7 +74,7 @@ func TestCollectionListProducts(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collections/%d/products.json", client.pathPrefix, 1),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collections/%d/products.json", client.ApiClient.GetPathPrefix(), 1),
 		httpmock.NewStringResponder(200,
 			`{
 				"products": [
@@ -182,7 +182,7 @@ func TestCollectionListProductsError(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collections/%d/products.json", client.pathPrefix, 1),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collections/%d/products.json", client.ApiClient.GetPathPrefix(), 1),
 		httpmock.NewStringResponder(200,
 			`{
 				"products": [
@@ -206,7 +206,7 @@ func TestListProductsWithPagination(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collections/%d/products.json", client.pathPrefix, 1),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collections/%d/products.json", client.ApiClient.GetPathPrefix(), 1),
 		httpmock.ResponderFromResponse(&http.Response{
 			StatusCode: 200,
 			Body: httpmock.NewRespBodyFromString(`{
@@ -339,7 +339,7 @@ func TestCollectionListProductsWithPaginationRequestError(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collections/%d/products.json", client.pathPrefix, 1),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collections/%d/products.json", client.ApiClient.GetPathPrefix(), 1),
 		httpmock.NewStringResponder(200,
 			`{
 				"products": [
@@ -367,7 +367,7 @@ func TestCollectionListProductsWithPaginationExtractionError(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collections/%d/products.json", client.pathPrefix, 1),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collections/%d/products.json", client.ApiClient.GetPathPrefix(), 1),
 		httpmock.ResponderFromResponse(&http.Response{
 			StatusCode: 200,
 			Body: httpmock.NewRespBodyFromString(`{

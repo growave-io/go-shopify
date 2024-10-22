@@ -15,7 +15,7 @@ func TestBlogList(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			200,
 			`{"blogs": [{"id":1},{"id":2}]}`,
@@ -39,7 +39,7 @@ func TestBlogCount(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/count.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/count.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			200,
 			`{"count": 5}`,
@@ -63,7 +63,7 @@ func TestBlogGet(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/1.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			200,
 			`{"blog": {"id":1}}`,
@@ -87,7 +87,7 @@ func TestBlogCreate(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(
 			200,
 			loadFixture("blog.json"),
@@ -115,7 +115,7 @@ func TestBlogUpdate(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"PUT",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/1.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(
 			200,
 			loadFixture("blog.json"),
@@ -142,7 +142,7 @@ func TestBlogDelete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, "{}"))
 
 	err := client.Blog.Delete(context.Background(), 1)

@@ -48,7 +48,7 @@ func TestShippingZoneListError(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shipping_zones.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shipping_zones.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(500, ""))
 
 	expectedErrMessage := "Unknown Error"
@@ -67,7 +67,7 @@ func TestShippingZoneList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shipping_zones.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shipping_zones.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("shipping_zones.json")))
 
 	shippingZones, err := client.ShippingZone.List(context.Background())

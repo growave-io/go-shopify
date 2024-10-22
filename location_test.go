@@ -14,7 +14,7 @@ func TestLocationServiceOp_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/locations.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/locations.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("locations.json")))
 
 	products, err := client.Location.List(context.Background(), nil)
@@ -52,7 +52,7 @@ func TestLocationServiceOp_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/locations/4688969785.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/locations/4688969785.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("location.json")))
 
 	product, err := client.Location.Get(context.Background(), 4688969785, nil)
@@ -90,7 +90,7 @@ func TestLocationServiceOp_Count(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/locations/count.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/locations/count.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"count": 3}`))
 
 	cnt, err := client.Location.Count(context.Background(), nil)

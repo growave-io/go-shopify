@@ -52,7 +52,7 @@ func setup() {
 	client = MustNewClient(app, "fooshop", "abcd",
 		WithVersion(testApiVersion),
 		WithRetry(maxRetries))
-	httpmock.ActivateNonDefault(client.Client)
+	httpmock.ActivateNonDefault(client.ApiClient.GetHttpClient())
 }
 
 func teardown() {
@@ -70,32 +70,32 @@ func loadFixture(filename string) []byte {
 func TestNewClient(t *testing.T) {
 	testClient := MustNewClient(app, "fooshop", "abcd", WithVersion(testApiVersion))
 	expected := "https://fooshop.myshopify.com"
-	if testClient.baseURL.String() != expected {
-		t.Errorf("MustNewClient BaseURL = %v, expected %v", testClient.baseURL.String(), expected)
+	if testClient.ApiClient.GetBaseUrl().String() != expected {
+		t.Errorf("MustNewClient BaseURL = %v, expected %v", testClient.ApiClient.GetBaseUrl().String(), expected)
 	}
 }
 
 func TestNewClientWithNoToken(t *testing.T) {
 	testClient := MustNewClient(app, "fooshop", "", WithVersion(testApiVersion))
 	expected := "https://fooshop.myshopify.com"
-	if testClient.baseURL.String() != expected {
-		t.Errorf("MustNewClient BaseURL = %v, expected %v", testClient.baseURL.String(), expected)
+	if testClient.ApiClient.GetBaseUrl().String() != expected {
+		t.Errorf("MustNewClient BaseURL = %v, expected %v", testClient.ApiClient.GetBaseUrl().String(), expected)
 	}
 }
 
 func TestAppNewClient(t *testing.T) {
 	testClient, _ := app.NewClient("fooshop", "abcd", WithVersion(testApiVersion))
 	expected := "https://fooshop.myshopify.com"
-	if testClient.baseURL.String() != expected {
-		t.Errorf("MustNewClient BaseURL = %v, expected %v", testClient.baseURL.String(), expected)
+	if testClient.ApiClient.GetBaseUrl().String() != expected {
+		t.Errorf("MustNewClient BaseURL = %v, expected %v", testClient.ApiClient.GetBaseUrl().String(), expected)
 	}
 }
 
 func TestAppNewClientWithNoToken(t *testing.T) {
 	testClient, _ := app.NewClient("fooshop", "", WithVersion(testApiVersion))
 	expected := "https://fooshop.myshopify.com"
-	if testClient.baseURL.String() != expected {
-		t.Errorf("MustNewClient BaseURL = %v, expected %v", testClient.baseURL.String(), expected)
+	if testClient.ApiClient.GetBaseUrl().String() != expected {
+		t.Errorf("MustNewClient BaseURL = %v, expected %v", testClient.ApiClient.GetBaseUrl().String(), expected)
 	}
 }
 
@@ -463,8 +463,8 @@ func TestRetry(t *testing.T) {
 
 		err = client.Do(req, body)
 
-		if client.attempts != c.retries {
-			t.Errorf("Do(): attempts do not match retries %#v, actual %#v", client.attempts, c.retries)
+		if client.ApiClient.GetAttempts() != c.retries {
+			t.Errorf("Do(): attempts do not match retries %#v, actual %#v", client.ApiClient.GetAttempts(), c.retries)
 		}
 
 		if err != nil {
@@ -506,7 +506,7 @@ func TestRetryPost(t *testing.T) {
 	}
 
 	testClient := MustNewClient(app, "fooshop", "abcd", WithRetry(2))
-	httpmock.ActivateNonDefault(testClient.Client)
+	httpmock.ActivateNonDefault(testClient.ApiClient.GetHttpClient())
 	shopUrl := fmt.Sprintf("https://fooshop.myshopify.com/%v", u)
 	httpmock.RegisterResponder("POST", shopUrl, responder)
 
@@ -531,7 +531,7 @@ func TestClientDoAutoApiVersion(t *testing.T) {
 	expected := testApiVersion
 
 	testClient := MustNewClient(app, "fooshop", "abcd")
-	httpmock.ActivateNonDefault(testClient.Client)
+	httpmock.ActivateNonDefault(testClient.ApiClient.GetHttpClient())
 	shopUrl := fmt.Sprintf("https://fooshop.myshopify.com/%v", u)
 	httpmock.RegisterResponder("GET", shopUrl, responder)
 
@@ -545,10 +545,10 @@ func TestClientDoAutoApiVersion(t *testing.T) {
 		t.Errorf("TestClientDoApiVersion(): errored %s", err)
 	}
 
-	if expected != testClient.apiVersion {
+	if expected != testClient.ApiClient.GetApiVersion() {
 		t.Errorf(
 			"TestClientDoApiVersion(): client unable to get API Version from X-Shopify-API-Version: expected %s received %s",
-			expected, testClient.apiVersion)
+			expected, testClient.ApiClient.GetApiVersion())
 	}
 }
 
@@ -602,8 +602,8 @@ func TestCustomHTTPClientDo(t *testing.T) {
 
 	for _, c := range cases {
 
-		client.Client = c.client
-		httpmock.ActivateNonDefault(client.Client)
+		client.ApiClient.SetHttpClient(c.client)
+		httpmock.ActivateNonDefault(client.ApiClient.GetHttpClient())
 
 		shopUrl := fmt.Sprintf("https://fooshop.myshopify.com/%v", c.url)
 		httpmock.RegisterResponder("GET", shopUrl, c.responder)
@@ -642,7 +642,7 @@ func TestCreateAndDo(t *testing.T) {
 		Foo string `json:"foo"`
 	}
 
-	mockPrefix := fmt.Sprintf("https://fooshop.myshopify.com/%s/", client.pathPrefix)
+	mockPrefix := fmt.Sprintf("https://fooshop.myshopify.com/%s/", client.ApiClient.GetPathPrefix())
 
 	cases := []struct {
 		url       string
@@ -827,13 +827,13 @@ func TestCount(t *testing.T) {
 	defer teardown()
 
 	httpmock.RegisterResponder("GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/foocount", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/foocount", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"count": 5}`))
 
 	params := map[string]string{"created_at_min": "2016-01-01T00:00:00Z"}
 	httpmock.RegisterResponderWithQuery(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/foocount", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/foocount", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewStringResponder(200, `{"count": 2}`))
 
@@ -953,8 +953,8 @@ func TestDoRateLimit(t *testing.T) {
 				if !reflect.DeepEqual(err, c.expected) {
 					t.Errorf("Do(): expected error %#v, actual %#v", c.expected, err)
 				}
-			} else if err == nil && !reflect.DeepEqual(client.RateLimits, c.expected) {
-				t.Errorf("%s: expected %#v, actual %#v", c.description, c.expected, client.RateLimits)
+			} else if err == nil && !reflect.DeepEqual(*client.ApiClient.GetRateLimits(), c.expected) {
+				t.Errorf("%s: expected %#v, actual %#v", c.description, c.expected, client.ApiClient.GetRateLimits())
 			}
 		})
 	}
@@ -965,14 +965,14 @@ func TestListWithPagination(t *testing.T) {
 	defer teardown()
 
 	httpmock.RegisterResponder("GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/locations", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/locations", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("locations.json")).
 			HeaderSet(http.Header{
 				"Link": {
 					fmt.Sprintf(
 						`<https://fooshop.myshopify.com/%s/locations.json?page_info=abc&limit=10>; rel="next", <https://fooshop.myshopify.com/%s/locations.json?page_info=123&limit=10>; rel="previous"`,
-						client.pathPrefix,
-						client.pathPrefix,
+						client.ApiClient.GetPathPrefix(),
+						client.ApiClient.GetPathPrefix(),
 					),
 				},
 			}))

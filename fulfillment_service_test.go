@@ -16,7 +16,7 @@ func TestFulfillmentServiceServiceOp_List(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		http.MethodGet,
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_services.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_services.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("fulfillment_services.json")),
 	)
 
@@ -56,7 +56,7 @@ func TestFulfillmentServiceServiceOp_Get(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		http.MethodGet,
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_services/1061774487.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_services/1061774487.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("fulfillment_service.json")),
 	)
 
@@ -92,7 +92,7 @@ func TestFulfillmentServiceServiceOp_Create(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		http.MethodPost,
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_services.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_services.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("fulfillment_service.json")),
 	)
 
@@ -115,7 +115,7 @@ func TestFulfillmentServiceServiceOp_Update(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		http.MethodPut,
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_services/1061774487.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_services/1061774487.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("fulfillment_service.json")),
 	)
 
@@ -154,7 +154,7 @@ func TestFulfillmentServiceServiceOp_Delete(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		http.MethodDelete,
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_services/1061774487.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_services/1061774487.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, ""),
 	)
 

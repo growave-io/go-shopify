@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// Return the full shop name, including .myshopify.com
+// ShopFullName returns the full shop name, including .myshopify.com
 func ShopFullName(name string) string {
 	name = strings.TrimSpace(name)
 	name = strings.Trim(name, ".")
@@ -17,7 +17,7 @@ func ShopFullName(name string) string {
 	return name + ".myshopify.com"
 }
 
-// Return the short shop name, excluding .myshopify.com
+// ShopShortName returns the short shop name, excluding .myshopify.com
 func ShopShortName(name string) string {
 	// Convert to fullname and remove the myshopify part. Perhaps not the most
 	// performant solution, but then we don't have to repeat all the trims here
@@ -25,13 +25,13 @@ func ShopShortName(name string) string {
 	return strings.Replace(ShopFullName(name), ".myshopify.com", "", -1)
 }
 
-// Return the Shop's base url.
+// ShopBaseUrl returns the Shop's base url.
 func ShopBaseUrl(name string) string {
 	name = ShopFullName(name)
 	return fmt.Sprintf("https://%s", name)
 }
 
-// Return the prefix for a metafield path
+// MetafieldPathPrefix returns the prefix for a metafield path
 func MetafieldPathPrefix(resource string, resourceId uint64) string {
 	prefix := "metafields"
 	if resource != "" {
@@ -40,7 +40,7 @@ func MetafieldPathPrefix(resource string, resourceId uint64) string {
 	return prefix
 }
 
-// Return the prefix for a fulfillment path
+// FulfillmentPathPrefix returns the prefix for a fulfillment path
 func FulfillmentPathPrefix(resource string, resourceId uint64) string {
 	prefix := "fulfillments"
 	if resource != "" {
@@ -72,7 +72,7 @@ func (c *OnlyDate) MarshalJSON() ([]byte, error) {
 	return []byte(c.String()), nil
 }
 
-// It seems shopify accepts both the date with double-quotes and without them, so we just stick to the double-quotes for now.
+// EncodeValues it seems shopify accepts both the date with double-quotes and without them, so we just stick to the double-quotes for now.
 func (c *OnlyDate) EncodeValues(key string, v *url.Values) error {
 	v.Add(key, c.String())
 	return nil

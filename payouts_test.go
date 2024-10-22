@@ -17,7 +17,7 @@ func TestPayoutsList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/payouts.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/payouts.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("payouts_filtered.json")))
 
 	date1 := OnlyDate{time.Date(2013, 11, 0o1, 0, 0, 0, 0, time.UTC)}
@@ -36,7 +36,7 @@ func TestPayoutsListIncorrectDate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/payouts.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/payouts.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"payouts": [{"id":1, "date":"20-02-2"}]}`))
 
 	date1 := OnlyDate{time.Date(2022, 0o2, 0o3, 0, 0, 0, 0, time.Local)}
@@ -50,7 +50,7 @@ func TestPayoutsListError(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/payouts.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/payouts.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(500, ""))
 
 	expectedErrMessage := "Unknown Error"
@@ -69,7 +69,7 @@ func TestPayoutListAll(t *testing.T) {
 	setup()
 	defer teardown()
 
-	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/payouts.json", client.pathPrefix)
+	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/payouts.json", client.ApiClient.GetPathPrefix())
 
 	cases := []struct {
 		name                string
@@ -181,7 +181,7 @@ func TestPayoutsListWithPagination(t *testing.T) {
 	setup()
 	defer teardown()
 
-	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/payouts.json", client.pathPrefix)
+	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/payouts.json", client.ApiClient.GetPathPrefix())
 
 	cases := []struct {
 		body               string
@@ -298,7 +298,7 @@ func TestPayoutsGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/payouts/623721858.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/payouts/623721858.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("payout.json")))
 
 	payout, err := client.Payouts.Get(context.Background(), 623721858, nil)

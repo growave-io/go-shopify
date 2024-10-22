@@ -68,7 +68,7 @@ func TestVariantList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"variants": [{"id":1},{"id":2}]}`))
 
 	variants, err := client.Variant.List(context.Background(), 1, nil)
@@ -86,13 +86,13 @@ func TestVariantCount(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants/count.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants/count.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"count": 3}`))
 
 	params := map[string]string{"created_at_min": "2016-01-01T00:00:00Z"}
 	httpmock.RegisterResponderWithQuery(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants/count.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants/count.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewStringResponder(200, `{"count": 2}`))
 
@@ -122,7 +122,7 @@ func TestVariantGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"variant": {"id":1}}`))
 
 	variant, err := client.Variant.Get(context.Background(), 1, nil)
@@ -140,7 +140,7 @@ func TestVariantCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants.json", client.pathPrefix),
+	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("variant.json")))
 
 	price := decimal.NewFromFloat(1)
@@ -160,7 +160,7 @@ func TestVariantCreateWithMetafields(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants.json", client.pathPrefix),
+	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("variant_with_metafields.json")))
 
 	price := decimal.NewFromFloat(2)
@@ -180,7 +180,7 @@ func TestVariantUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("variant.json")))
 
 	variant := Variant{
@@ -201,7 +201,7 @@ func TestVariantWithMetafieldsUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/2.json", client.pathPrefix),
+	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/2.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("variant_with_metafields.json")))
 
 	variant := Variant{
@@ -230,7 +230,7 @@ func TestVariantDelete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, "{}"))
 
 	err := client.Variant.Delete(context.Background(), 1, 1)
@@ -243,7 +243,7 @@ func TestVariantListMetafields(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1/metafields.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1/metafields.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"metafields": [{"id":1},{"id":2}]}`))
 
 	metafields, err := client.Variant.ListMetafields(context.Background(), 1, nil)
@@ -261,13 +261,13 @@ func TestVariantCountMetafields(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1/metafields/count.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1/metafields/count.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"count": 3}`))
 
 	params := map[string]string{"created_at_min": "2016-01-01T00:00:00Z"}
 	httpmock.RegisterResponderWithQuery(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1/metafields/count.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1/metafields/count.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewStringResponder(200, `{"count": 2}`))
 
@@ -297,7 +297,7 @@ func TestVariantGetMetafield(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1/metafields/2.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1/metafields/2.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"metafield": {"id":2}}`))
 
 	metafield, err := client.Variant.GetMetafield(context.Background(), 1, 2, nil)
@@ -315,7 +315,7 @@ func TestVariantCreateMetafield(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1/metafields.json", client.pathPrefix),
+	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1/metafields.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("metafield.json")))
 
 	metafield := Metafield{
@@ -337,7 +337,7 @@ func TestVariantUpdateMetafield(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1/metafields/2.json", client.pathPrefix),
+	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1/metafields/2.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("metafield.json")))
 
 	metafield := Metafield{
@@ -360,7 +360,7 @@ func TestVariantDeleteMetafield(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1/metafields/2.json", client.pathPrefix),
+	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1/metafields/2.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, "{}"))
 
 	err := client.Variant.DeleteMetafield(context.Background(), 1, 2)
@@ -373,7 +373,7 @@ func TestVariantListWithTaxCode(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"variants": [{"id":1, "tax_code":"P0000000"},{"id":2, "tax_code":"P0000000"}]}`))
 
 	variants, err := client.Variant.List(context.Background(), 1, nil)
@@ -391,7 +391,7 @@ func TestVariantGetWithTaxCode(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/variants/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"variant": {"id":1, "tax_code":"P0000000"}}`))
 
 	variant, err := client.Variant.Get(context.Background(), 1, nil)
@@ -409,7 +409,7 @@ func TestVariantCreateWithTaxCode(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants.json", client.pathPrefix),
+	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/products/1/variants.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("variant_with_taxcode.json")))
 
 	price := decimal.NewFromFloat(1)

@@ -55,7 +55,7 @@ func TestDraftOrderGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/994118539.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/994118539.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("draft_order.json")))
 
 	draftOrder, err := client.DraftOrder.Get(context.Background(), 994118539, nil)
@@ -69,7 +69,7 @@ func TestDraftOrderCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders.json", client.pathPrefix),
+	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(201, `{"draft_order":{"id": 1}}`))
 
 	draftOrder := DraftOrder{
@@ -96,7 +96,7 @@ func TestDraftOrderUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"draft_order":{"id": 1}}`))
 
 	draftOrder := DraftOrder{
@@ -120,13 +120,13 @@ func TestDraftOrderCount(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/count.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/count.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"count": 7}`))
 
 	params := map[string]string{"status": "open"}
 	httpmock.RegisterResponderWithQuery(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/count.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/count.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewStringResponder(200, `{"count": 2}`))
 
@@ -155,7 +155,7 @@ func TestDraftOrderList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("draft_orders.json")))
 
 	draftOrders, err := client.DraftOrder.List(context.Background(), nil)
@@ -180,7 +180,7 @@ func TestDraftOrderListOptions(t *testing.T) {
 	}
 	httpmock.RegisterResponderWithQuery(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewBytesResponder(200, loadFixture("draft_orders.json")))
 
@@ -209,7 +209,7 @@ func TestDraftOrderInvoice(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/send_invoice.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/send_invoice.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(201, loadFixture("invoice.json")))
 	invoice := DraftOrderInvoice{
 		To:   "first@example.com",
@@ -236,7 +236,7 @@ func TestDraftOrderDelete(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"DELETE",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, nil))
 
 	err := client.DraftOrder.Delete(context.Background(), 1)
@@ -251,7 +251,7 @@ func TestDraftOrderComplete(t *testing.T) {
 	params := map[string]string{"payment_pending": "false"}
 	httpmock.RegisterResponderWithQuery(
 		"PUT",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/complete.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/complete.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewBytesResponder(200, loadFixture("draft_order.json")))
 
@@ -268,7 +268,7 @@ func TestDraftOrderCompletePending(t *testing.T) {
 	params := map[string]string{"payment_pending": "true"}
 	httpmock.RegisterResponderWithQuery(
 		"PUT",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/complete.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/complete.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewBytesResponder(200, loadFixture("draft_order.json")))
 
@@ -283,7 +283,7 @@ func TestDraftOrderListMetafields(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/metafields.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/metafields.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"metafields": [{"id":1},{"id":2}]}`))
 
 	metafields, err := client.DraftOrder.ListMetafields(context.Background(), 1, nil)
@@ -301,13 +301,13 @@ func TestDraftOrderCountMetafields(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/metafields/count.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/metafields/count.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"count": 3}`))
 
 	params := map[string]string{"created_at_min": "2016-01-01T00:00:00Z"}
 	httpmock.RegisterResponderWithQuery(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/metafields/count.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/metafields/count.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewStringResponder(200, `{"count": 2}`))
 
@@ -337,7 +337,7 @@ func TestDraftOrderGetMetafield(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/metafields/2.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/metafields/2.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"metafield": {"id":2}}`))
 
 	metafield, err := client.DraftOrder.GetMetafield(context.Background(), 1, 2, nil)
@@ -355,7 +355,7 @@ func TestDraftOrderCreateMetafield(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/metafields.json", client.pathPrefix),
+	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/metafields.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("metafield.json")))
 
 	metafield := Metafield{
@@ -376,7 +376,7 @@ func TestDraftOrderUpdateMetafield(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/metafields/2.json", client.pathPrefix),
+	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/metafields/2.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("metafield.json")))
 
 	metafield := Metafield{
@@ -398,7 +398,7 @@ func TestDraftOrderDeleteMetafield(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/metafields/2.json", client.pathPrefix),
+	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/draft_orders/1/metafields/2.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, "{}"))
 
 	err := client.DraftOrder.DeleteMetafield(context.Background(), 1, 2)

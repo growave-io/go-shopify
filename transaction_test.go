@@ -132,7 +132,7 @@ func TestTransactionList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/1/transactions.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/1/transactions.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("transactions.json")))
 
 	transactions, err := client.Transaction.List(context.Background(), 1, nil)
@@ -149,7 +149,7 @@ func TestTransactionCount(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/1/transactions/count.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/1/transactions/count.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"count": 2}`))
 
 	cnt, err := client.Transaction.Count(context.Background(), 1, nil)
@@ -167,7 +167,7 @@ func TestTransactionGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/1/transactions/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/1/transactions/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("transaction.json")))
 
 	transaction, err := client.Transaction.Get(context.Background(), 1, 1, nil)
@@ -182,7 +182,7 @@ func TestTransactionCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/1/transactions.json", client.pathPrefix),
+	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/1/transactions.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("transaction.json")))
 
 	amount := decimal.NewFromFloat(409.94)

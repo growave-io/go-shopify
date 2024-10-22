@@ -14,7 +14,7 @@ func TestGiftCardGet(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/gift_cards/1.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/gift_cards/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(
 			200,
 			loadFixture("gift_card/get.json"),
@@ -38,7 +38,7 @@ func TestGiftCardList(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/gift_cards.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/gift_cards.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(
 			200,
 			loadFixture("gift_card/list.json"),
@@ -62,7 +62,7 @@ func TestGiftCardCreate(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/gift_cards.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/gift_cards.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(
 			200,
 			loadFixture("gift_card/get.json"),
@@ -86,7 +86,7 @@ func TestGiftCardUpdate(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"PUT",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/gift_cards/1.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/gift_cards/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(
 			200,
 			loadFixture("gift_card/get.json"),
@@ -110,7 +110,7 @@ func TestGiftCardDisable(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/gift_cards/1/disable.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/gift_cards/1/disable.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(
 			200,
 			loadFixture("gift_card/get.json"),
@@ -134,7 +134,7 @@ func TestGiftCardCount(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/gift_cards/count.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/gift_cards/count.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			200,
 			`{"count": 5}`,

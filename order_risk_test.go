@@ -16,7 +16,7 @@ func TestOrderRiskListError(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/450789469/risks.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/450789469/risks.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(500, ""))
 
 	expectedErrMessage := "Unknown Error"
@@ -35,7 +35,7 @@ func TestOrderRiskListAll(t *testing.T) {
 	setup()
 	defer teardown()
 
-	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/450789469/risks.json", client.pathPrefix)
+	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/450789469/risks.json", client.ApiClient.GetPathPrefix())
 
 	cases := []struct {
 		name                string
@@ -147,7 +147,7 @@ func TestOrderRiskListWithPagination(t *testing.T) {
 	setup()
 	defer teardown()
 
-	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/450789469/risks.json", client.pathPrefix)
+	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/450789469/risks.json", client.ApiClient.GetPathPrefix())
 
 	// The strconv.Atoi error changed in go 1.8, 1.7 is still being tested/supported.
 	limitConversionErrorMessage := `strconv.Atoi: parsing "invalid": invalid syntax`
@@ -267,7 +267,7 @@ func TestOrderRiskList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/450789469/risks.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/450789469/risks.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("order_risks.json")))
 
 	orderRisks, err := client.OrderRisk.List(context.Background(), 450789469, nil)
@@ -317,7 +317,7 @@ func TestOrderRiskListOptions(t *testing.T) {
 	}
 	httpmock.RegisterResponderWithQuery(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/450789469/risks.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/450789469/risks.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewBytesResponder(200, loadFixture("order_risks.json")))
 
@@ -369,7 +369,7 @@ func TestOrderRiskGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/450789469/risks/284138680.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/450789469/risks/284138680.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("order_risk.json")))
 
 	orderRisk, err := client.OrderRisk.Get(context.Background(), 450789469, 284138680, nil)
@@ -397,7 +397,7 @@ func TestOrderRiskCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/450789469/risks.json", client.pathPrefix),
+	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/450789469/risks.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(201, `{"risk":{"id": 1}}`))
 
 	orderRisk := OrderRisk{
@@ -419,7 +419,7 @@ func TestOrderRiskUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/1/risks/2.json", client.pathPrefix),
+	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/1/risks/2.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(201, `{"risk":{"id": 1,"order_id": 2}}`))
 
 	orderRisk := OrderRisk{
@@ -443,7 +443,7 @@ func TestOrderRiskDelete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/1/risks/2.json", client.pathPrefix),
+	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/1/risks/2.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, "{}"))
 
 	err := client.OrderRisk.Delete(context.Background(), 1, 2)

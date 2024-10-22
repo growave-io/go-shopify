@@ -1,154 +1,150 @@
 package goshopify
 
 import (
-    "context"
-    "math"
-    "time"
+	"context"
+	"math"
+	"time"
 )
 
 // GraphQLService is an interface to interact with the graphql endpoint
 // of the Shopify API
 // See https://shopify.dev/docs/admin-api/graphql/reference
 type GraphQLService interface {
-    Query(context.Context, string, interface{}, interface{}) error
+	Query(context.Context, string, interface{}, interface{}) error
 }
 
 // GraphQLServiceOp handles communication with the graphql endpoint of
 // the Shopify API.
 type GraphQLServiceOp struct {
-    client ClientInterface
+	client *Client
 }
 
 type graphQLResponse struct {
-    Data       interface{}        `json:"data"`
-    Errors     []graphQLError     `json:"errors"`
-    Extensions *graphQLExtensions `json:"extensions"`
+	Data       interface{}        `json:"data"`
+	Errors     []graphQLError     `json:"errors"`
+	Extensions *graphQLExtensions `json:"extensions"`
 }
 
 type graphQLExtensions struct {
-    Cost GraphQLCost `json:"cost"`
+	Cost GraphQLCost `json:"cost"`
 }
 
 // GraphQLCost represents the cost of the graphql query
 type GraphQLCost struct {
-    RequestedQueryCost int                   `json:"requestedQueryCost"`
-    ActualQueryCost    *int                  `json:"actualQueryCost"`
-    ThrottleStatus     GraphQLThrottleStatus `json:"throttleStatus"`
+	RequestedQueryCost int                   `json:"requestedQueryCost"`
+	ActualQueryCost    *int                  `json:"actualQueryCost"`
+	ThrottleStatus     GraphQLThrottleStatus `json:"throttleStatus"`
 }
 
 // GraphQLThrottleStatus represents the status of the shop's rate limit points
 type GraphQLThrottleStatus struct {
-    MaximumAvailable   float64 `json:"maximumAvailable"`
-    CurrentlyAvailable float64 `json:"currentlyAvailable"`
-    RestoreRate        float64 `json:"restoreRate"`
+	MaximumAvailable   float64 `json:"maximumAvailable"`
+	CurrentlyAvailable float64 `json:"currentlyAvailable"`
+	RestoreRate        float64 `json:"restoreRate"`
 }
 
 type graphQLError struct {
-    Message    string                  `json:"message"`
-    Extensions *graphQLErrorExtensions `json:"extensions"`
-    Locations  []graphQLErrorLocation  `json:"locations"`
+	Message    string                  `json:"message"`
+	Extensions *graphQLErrorExtensions `json:"extensions"`
+	Locations  []graphQLErrorLocation  `json:"locations"`
 }
 
 type graphQLErrorExtensions struct {
-    Code          string
-    Documentation string
+	Code          string
+	Documentation string
 }
 
 const (
-    graphQLErrorCodeThrottled = "THROTTLED"
+	graphQLErrorCodeThrottled = "THROTTLED"
 )
 
 type graphQLErrorLocation struct {
-    Line   int `json:"line"`
-    Column int `json:"column"`
+	Line   int `json:"line"`
+	Column int `json:"column"`
 }
 
 // Query creates a graphql query against the Shopify API
 // the "data" portion of the response is unmarshalled into resp
 func (s *GraphQLServiceOp) Query(ctx context.Context, q string, vars, resp interface{}) error {
-    data := struct {
-        Query     string      `json:"query"`
-        Variables interface{} `json:"variables"`
-    }{
-        Query:     q,
-        Variables: vars,
-    }
+	data := struct {
+		Query     string      `json:"query"`
+		Variables interface{} `json:"variables"`
+	}{
+		Query:     q,
+		Variables: vars,
+	}
 
-    attempts := 0
+	attempts := 0
 
-    for {
-        gr := graphQLResponse{
-            Data: resp,
-        }
+	for {
+		gr := graphQLResponse{
+			Data: resp,
+		}
 
-        err := s.client.Post(ctx, "graphql.json", data, &gr)
+		err := s.client.Post(ctx, "graphql.json", data, &gr)
 
-        // internal attempts count towards outer total
-        attempts += 1
+		// internal attempts count towards outer total
+		attempts += 1
 
-        var retryAfterSecs float64
+		var retryAfterSecs float64
 
-        if gr.Extensions != nil {
-            retryAfterSecs = gr.Extensions.Cost.RetryAfterSeconds()
-            s.client.GetRateLimits().GraphQLCost = &gr.Extensions.Cost
-            s.client.GetRateLimits().RetryAfterSeconds = retryAfterSecs
-        }
+		if gr.Extensions != nil {
+			retryAfterSecs = gr.Extensions.Cost.RetryAfterSeconds()
+			s.client.ApiClient.GetRateLimits().GraphQLCost = &gr.Extensions.Cost
+			s.client.ApiClient.GetRateLimits().RetryAfterSeconds = retryAfterSecs
+		}
 
-        if len(gr.Errors) > 0 {
-            responseError := ResponseError{Status: 200}
-            var doRetry bool
+		if len(gr.Errors) > 0 {
+			responseError := ResponseError{Status: 200}
+			var doRetry bool
 
-            for _, err := range gr.Errors {
-                if err.Extensions != nil && err.Extensions.Code == graphQLErrorCodeThrottled {
-                    if attempts >= s.client.GetRetries() {
-                        return RateLimitError{
-                            RetryAfter: int(math.Ceil(retryAfterSecs)),
-                            ResponseError: ResponseError{
-                                Status:  200,
-                                Message: err.Message,
-                            },
-                        }
-                    }
+			for _, err := range gr.Errors {
+				if err.Extensions != nil && err.Extensions.Code == graphQLErrorCodeThrottled {
+					if attempts >= s.client.ApiClient.GetRetries() {
+						return RateLimitError{
+							RetryAfter: int(math.Ceil(retryAfterSecs)),
+							ResponseError: ResponseError{
+								Status:  200,
+								Message: err.Message,
+							},
+						}
+					}
 
-                    // only need to retry graphql throttled retries
-                    doRetry = true
-                }
+					// only need to retry graphql throttled retries
+					doRetry = true
+				}
 
-                responseError.Errors = append(responseError.Errors, err.Message)
-            }
+				responseError.Errors = append(responseError.Errors, err.Message)
+			}
 
-            if doRetry {
-                wait := time.Duration(math.Ceil(retryAfterSecs)) * time.Second
-                s.client.GetLogger().Debugf("rate limited waiting %s", wait.String())
-                time.Sleep(wait)
-                continue
-            }
+			if doRetry {
+				wait := time.Duration(math.Ceil(retryAfterSecs)) * time.Second
+				s.client.ApiClient.GetLogger().Debugf("rate limited waiting %s", wait.String())
+				time.Sleep(wait)
+				continue
+			}
 
-            err = responseError
-        }
+			err = responseError
+		}
 
-        return err
-    }
+		return err
+	}
 }
 
 // RetryAfterSeconds returns the estimated retry after seconds based on
 // the requested query cost and throttle status
 func (c GraphQLCost) RetryAfterSeconds() float64 {
-    var diff float64
+	var diff float64
 
-    if c.ActualQueryCost != nil {
-        diff = c.ThrottleStatus.CurrentlyAvailable - float64(*c.ActualQueryCost)
-    } else {
-        diff = c.ThrottleStatus.CurrentlyAvailable - float64(c.RequestedQueryCost)
-    }
+	if c.ActualQueryCost != nil {
+		diff = c.ThrottleStatus.CurrentlyAvailable - float64(*c.ActualQueryCost)
+	} else {
+		diff = c.ThrottleStatus.CurrentlyAvailable - float64(c.RequestedQueryCost)
+	}
 
-    if diff < 0 {
-        return -diff / c.ThrottleStatus.RestoreRate
-    }
+	if diff < 0 {
+		return -diff / c.ThrottleStatus.RestoreRate
+	}
 
-    return 0
-}
-
-func NewGraphQLService(client ClientInterface) GraphQLService {
-    return &GraphQLServiceOp{client}
+	return 0
 }

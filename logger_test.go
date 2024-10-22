@@ -82,19 +82,21 @@ func TestDoGetHeadersDebug(t *testing.T) {
 	reqExpected := "[DEBUG] GET: //http:%2F%2Ftest.com/foo/1\n[DEBUG] SENT: request body\n"
 	resExpected := "[DEBUG] Shopify X-Request-Id: 00000000-0000-0000-0000-000000000000\n[DEBUG] RECV 200: OK\n[DEBUG] RESP: response body\n"
 
-	client := MustNewClient(app, "fooshop", "abcd", WithLogger(logger))
+	baseURL, _ := url.Parse("https://fooshop.myshopify.com")
+	apiClient := NewApiClient(app, baseURL, "abcd")
+	apiClient.SetLogger(logger)
 
-	client.logBody(nil, "")
+	apiClient.logBody(nil, "")
 	if out.String() != "" {
 		t.Errorf("logBody expected empty log output but received \"%s\"", out.String())
 	}
 
-	client.logRequest(nil)
+	apiClient.logRequest(nil)
 	if out.String() != "" {
 		t.Errorf("logRequest expected empty log output received \"%s\"", out.String())
 	}
 
-	client.logRequest(&http.Request{
+	apiClient.logRequest(&http.Request{
 		Method: "GET",
 		URL:    &url.URL{Host: "http://test.com", Path: "/foo/1"},
 		Body:   ioutil.NopCloser(strings.NewReader("request body")),
@@ -107,12 +109,12 @@ func TestDoGetHeadersDebug(t *testing.T) {
 	err.Reset()
 	out.Reset()
 
-	client.logResponse(nil)
+	apiClient.logResponse(nil)
 	if out.String() != "" {
 		t.Errorf("logResponse expected empty log output received \"%s\"", out.String())
 	}
 
-	client.logResponse(&http.Response{
+	apiClient.logResponse(&http.Response{
 		Status:     http.StatusText(http.StatusOK),
 		StatusCode: http.StatusOK,
 		Header:     map[string][]string{"X-Request-Id": {"00000000-0000-0000-0000-000000000000"}},
