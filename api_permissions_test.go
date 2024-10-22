@@ -13,7 +13,7 @@ func TestApiPermissionsDelete(t *testing.T) {
 	defer teardown()
 
 	httpmock.RegisterResponder("DELETE",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/%s/current.json", client.pathPrefix, apiPermissionsBasePath),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/%s/current.json", client.ApiClient.GetPathPrefix(), apiPermissionsBasePath),
 		httpmock.NewStringResponder(200, ""))
 
 	err := client.ApiPermissions.Delete(context.Background())

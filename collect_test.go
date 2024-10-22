@@ -34,7 +34,7 @@ func TestCollectList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collects.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collects.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"collects": [{"id":1},{"id":2}]}`))
 
 	collects, err := client.Collect.List(context.Background(), nil)
@@ -52,12 +52,12 @@ func TestCollectCount(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collects/count.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collects/count.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"count": 5}`))
 
 	params := map[string]string{"since_id": "123"}
 	httpmock.RegisterResponderWithQuery("GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/collects/count.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/collects/count.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewStringResponder(200, `{"count": 2}`))
 
@@ -87,7 +87,7 @@ func TestCollectGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collects/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/collects/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"collect": {"id":1}}`))
 
 	product, err := client.Collect.Get(context.Background(), 1, nil)
@@ -105,7 +105,7 @@ func TestCollectCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/collects.json", client.pathPrefix),
+	httpmock.RegisterResponder("POST", fmt.Sprintf("https://fooshop.myshopify.com/%s/collects.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("collect.json")))
 
 	collect := Collect{
@@ -125,7 +125,7 @@ func TestCollectDelete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/collects/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/collects/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, "{}"))
 
 	err := client.Collect.Delete(context.Background(), 1)

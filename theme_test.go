@@ -32,7 +32,7 @@ func TestThemeList(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/themes.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/themes.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			200,
 			`{"themes": [{"id":1},{"id":2}]}`,
@@ -42,7 +42,7 @@ func TestThemeList(t *testing.T) {
 	params := map[string]string{"role": "main"}
 	httpmock.RegisterResponderWithQuery(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/themes.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/themes.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewStringResponder(
 			200,
@@ -76,7 +76,7 @@ func TestThemeGet(t *testing.T) {
 	defer teardown()
 
 	httpmock.RegisterResponder("GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/%s/1.json", client.pathPrefix, themesBasePath),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/%s/1.json", client.ApiClient.GetPathPrefix(), themesBasePath),
 		httpmock.NewBytesResponder(200, loadFixture("theme.json")))
 
 	theme, err := client.Theme.Get(context.Background(), 1, nil)
@@ -119,7 +119,7 @@ func TestThemeUpdate(t *testing.T) {
 	defer teardown()
 
 	httpmock.RegisterResponder("PUT",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/%s/1.json", client.pathPrefix, themesBasePath),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/%s/1.json", client.ApiClient.GetPathPrefix(), themesBasePath),
 		httpmock.NewBytesResponder(200, loadFixture("theme.json")))
 
 	theme := getTheme()
@@ -139,7 +139,7 @@ func TestThemeCreate(t *testing.T) {
 	defer teardown()
 
 	httpmock.RegisterResponder("POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/%s.json", client.pathPrefix, themesBasePath),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/%s.json", client.ApiClient.GetPathPrefix(), themesBasePath),
 		httpmock.NewBytesResponder(200, loadFixture("theme.json")))
 
 	theme := getTheme()
@@ -159,7 +159,7 @@ func TestThemeDelete(t *testing.T) {
 	defer teardown()
 
 	httpmock.RegisterResponder("DELETE",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/%s/1.json", client.pathPrefix, themesBasePath),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/%s/1.json", client.ApiClient.GetPathPrefix(), themesBasePath),
 		httpmock.NewStringResponder(200, ""))
 
 	err := client.Theme.Delete(context.Background(), 1)

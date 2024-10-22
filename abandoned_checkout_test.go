@@ -15,7 +15,7 @@ func TestAbandonedCheckoutList(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/checkouts.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/checkouts.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			200,
 			`{"checkouts": [{"id":1},{"id":2}]}`,

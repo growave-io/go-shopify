@@ -8,6 +8,12 @@ import (
 // Option is used to configure client with options
 type Option func(c *Client)
 
+func WithApiClient(apiClient ApiClientInterface) Option {
+	return func(c *Client) {
+		c.ApiClient = apiClient
+	}
+}
+
 // WithVersion optionally sets the api-version if the passed string is valid
 func WithVersion(apiVersion string) Option {
 	return func(c *Client) {
@@ -15,8 +21,8 @@ func WithVersion(apiVersion string) Option {
 		if len(apiVersion) > 0 && (apiVersionRegex.MatchString(apiVersion) || apiVersion == UnstableApiVersion) {
 			pathPrefix = fmt.Sprintf("admin/api/%s", apiVersion)
 		}
-		c.apiVersion = apiVersion
-		c.pathPrefix = pathPrefix
+		c.ApiClient.SetApiVersion(apiVersion)
+		c.ApiClient.SetPathPrefix(pathPrefix)
 	}
 }
 
@@ -24,19 +30,19 @@ func WithVersion(apiVersion string) Option {
 // Rate limiting can be either REST API limits or GraphQL Cost limits
 func WithRetry(retries int) Option {
 	return func(c *Client) {
-		c.retries = retries
+		c.ApiClient.SetRetries(retries)
 	}
 }
 
 func WithLogger(logger LeveledLoggerInterface) Option {
 	return func(c *Client) {
-		c.log = logger
+		c.ApiClient.SetLogger(logger)
 	}
 }
 
 // WithHTTPClient is used to set a custom http client
 func WithHTTPClient(client *http.Client) Option {
 	return func(c *Client) {
-		c.Client = client
+		c.ApiClient.SetHttpClient(client)
 	}
 }

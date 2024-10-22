@@ -56,32 +56,8 @@ type RateLimitInfo struct {
 
 // Client manages communication with the Shopify API.
 type Client struct {
-	// HTTP client used to communicate with the Shopify API.
-	Client *http.Client
-	log    LeveledLoggerInterface
-
-	// App settings
-	app App
-
-	// Base URL for API requests.
-	// This is set on a per-store basis which means that each store must have
-	// its own client.
-	baseURL *url.URL
-
-	// URL Prefix, defaults to "admin" see WithVersion
-	pathPrefix string
-
-	// version you're currently using of the api, defaults to "stable"
-	apiVersion string
-
-	// A permanent access token
-	token string
-
-	// max number of retries, defaults to 0 for no retries see WithRetry option
-	retries  int
-	attempts int
-
-	RateLimits RateLimitInfo
+	// Api client used to communicate with the Shopify API.
+	ApiClient ApiClientInterface
 
 	// Services used for communicating with the API
 	Product                    ProductService
@@ -132,6 +108,63 @@ type Client struct {
 	OrderRisk                  OrderRiskService
 	ApiPermissions             ApiPermissionsService
 	Article                    ArticlesService
+}
+
+type ApiClientInterface interface {
+	NewRequest(ctx context.Context, method, relPath string, body, options interface{}) (*http.Request, error)
+	Do(req *http.Request, v interface{}) error
+	Count(ctx context.Context, path string, options interface{}) (int, error)
+	CreateAndDo(ctx context.Context, method, relPath string, data, options, resource interface{}) error
+	Get(ctx context.Context, path string, resource, options interface{}) error
+	ListWithPagination(ctx context.Context, path string, resource, options interface{}) (*Pagination, error)
+	Post(ctx context.Context, path string, data, resource interface{}) error
+	Put(ctx context.Context, path string, data, resource interface{}) error
+	Delete(ctx context.Context, path string) error
+	DeleteWithOptions(ctx context.Context, path string, options interface{}) error
+	SetHttpClient(client *http.Client)
+	GetHttpClient() *http.Client
+	SetLogger(logger LeveledLoggerInterface)
+	GetLogger() LeveledLoggerInterface
+	SetBaseUrl(baseURL *url.URL)
+	GetBaseUrl() *url.URL
+	SetPathPrefix(pathPrefix string)
+	GetPathPrefix() string
+	SetApiVersion(apiVersion string)
+	GetApiVersion() string
+	SetRetries(retries int)
+	GetRetries() int
+	SetAttempts(attempts int)
+	GetAttempts() int
+	SetRateLimits(rateLimits *RateLimitInfo)
+	GetRateLimits() *RateLimitInfo
+}
+
+type ApiClient struct {
+	HttpClient *http.Client
+	Log        LeveledLoggerInterface
+
+	// App settings
+	app App
+
+	// Base URL for API requests.
+	// This is set on a per-store basis which means that each store must have
+	// its own client.
+	BaseURL *url.URL
+
+	// URL Prefix, defaults to "admin" see WithVersion
+	PathPrefix string
+
+	// version you're currently using of the api, defaults to "stable"
+	apiVersion string
+
+	// A permanent access token
+	token string
+
+	// max number of retries, defaults to 0 for no retries see WithRetry option
+	retries  int
+	attempts int
+
+	RateLimits *RateLimitInfo
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -196,13 +229,21 @@ type RateLimitError struct {
 // specified without a preceding slash. If specified, the value pointed to by
 // body is JSON encoded and included as the request body.
 func (c *Client) NewRequest(ctx context.Context, method, relPath string, body, options interface{}) (*http.Request, error) {
+	return c.ApiClient.NewRequest(ctx, method, relPath, body, options)
+}
+
+// Creates an API request. A relative URL can be provided in urlStr, which will
+// be resolved to the BaseURL of the Client. Relative URLS should always be
+// specified without a preceding slash. If specified, the value pointed to by
+// body is JSON encoded and included as the request body.
+func (c *ApiClient) NewRequest(ctx context.Context, method, relPath string, body, options interface{}) (*http.Request, error) {
 	rel, err := url.Parse(relPath)
 	if err != nil {
 		return nil, err
 	}
 
 	// Make the full url based on the relative path
-	u := c.baseURL.ResolveReference(rel)
+	u := c.BaseURL.ResolveReference(rel)
 
 	// Add custom options
 	if options != nil {
@@ -249,7 +290,7 @@ func (c *Client) NewRequest(ctx context.Context, method, relPath string, body, o
 	return req, nil
 }
 
-// MustNewClient returns a new Shopify API client with an already authenticated shopname and
+// NewClient returns a new Shopify API client with an already authenticated shopname and
 // token. The shopName parameter is the shop's myshopify domain,
 // e.g. "theshop.myshopify.com", or simply "theshop"
 // a.NewClient(shopName, token, opts) is equivalent to NewClient(a, shopName, token, opts)
@@ -257,7 +298,7 @@ func (app App) NewClient(shopName, token string, opts ...Option) (*Client, error
 	return NewClient(app, shopName, token, opts...)
 }
 
-// Returns a new Shopify API client with an already authenticated shopname and
+// MustNewClient returns a new Shopify API client with an already authenticated shopname and
 // token. The shopName parameter is the shop's myshopify domain,
 // e.g. "theshop.myshopify.com", or simply "theshop"
 // panics if an error occurs
@@ -269,7 +310,7 @@ func MustNewClient(app App, shopName, token string, opts ...Option) *Client {
 	return c
 }
 
-// Returns a new Shopify API client with an already authenticated shopname and
+// NewClient Returns a new Shopify API client with an already authenticated shopname and
 // token. The shopName parameter is the shop's myshopify domain,
 // e.g. "theshop.myshopify.com", or simply "theshop"
 func NewClient(app App, shopName, token string, opts ...Option) (*Client, error) {
@@ -279,15 +320,7 @@ func NewClient(app App, shopName, token string, opts ...Option) (*Client, error)
 	}
 
 	c := &Client{
-		Client: &http.Client{
-			Timeout: time.Second * defaultHttpTimeout,
-		},
-		log:        &LeveledLogger{},
-		app:        app,
-		baseURL:    baseURL,
-		token:      token,
-		apiVersion: defaultApiVersion,
-		pathPrefix: defaultApiPathPrefix,
+		ApiClient: NewApiClient(app, baseURL, token),
 	}
 
 	c.Product = &ProductServiceOp{client: c}
@@ -347,10 +380,32 @@ func NewClient(app App, shopName, token string, opts ...Option) (*Client, error)
 	return c, nil
 }
 
+func NewApiClient(app App, baseURL *url.URL, token string) *ApiClient {
+	return &ApiClient{
+		HttpClient: &http.Client{
+			Timeout: time.Second * defaultHttpTimeout,
+		},
+		Log:        &LeveledLogger{},
+		app:        app,
+		BaseURL:    baseURL,
+		PathPrefix: defaultApiPathPrefix,
+		apiVersion: defaultApiVersion,
+		token:      token,
+		RateLimits: &RateLimitInfo{},
+	}
+}
+
 // Do sends an API request and populates the given interface with the parsed
 // response. It does not make much sense to call Do without a prepared
 // interface instance.
 func (c *Client) Do(req *http.Request, v interface{}) error {
+	return c.ApiClient.Do(req, v)
+}
+
+// Do sends an API request and populates the given interface with the parsed
+// response. It does not make much sense to call Do without a prepared
+// interface instance.
+func (c *ApiClient) Do(req *http.Request, v interface{}) error {
 	_, err := c.doGetHeaders(req, v)
 	if err != nil {
 		return err
@@ -360,7 +415,7 @@ func (c *Client) Do(req *http.Request, v interface{}) error {
 }
 
 // doGetHeaders executes a request, decoding the response into `v` and also returns any response headers.
-func (c *Client) doGetHeaders(req *http.Request, v interface{}) (http.Header, error) {
+func (c *ApiClient) doGetHeaders(req *http.Request, v interface{}) (http.Header, error) {
 	var resp *http.Response
 	var err error
 	retries := c.retries
@@ -380,7 +435,7 @@ func (c *Client) doGetHeaders(req *http.Request, v interface{}) (http.Header, er
 	for {
 		c.attempts++
 		req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
-		resp, err = c.Client.Do(req)
+		resp, err = c.HttpClient.Do(req)
 		c.logResponse(resp)
 		if err != nil {
 			return nil, err // http client errors, not api responses
@@ -402,7 +457,7 @@ func (c *Client) doGetHeaders(req *http.Request, v interface{}) (http.Header, er
 			// back off and retry
 
 			wait := time.Duration(rateLimitErr.RetryAfter) * time.Second
-			c.log.Debugf("rate limited waiting %s", wait.String())
+			c.Log.Debugf("rate limited waiting %s", wait.String())
 			time.Sleep(wait)
 			retries--
 			continue
@@ -411,7 +466,7 @@ func (c *Client) doGetHeaders(req *http.Request, v interface{}) (http.Header, er
 		var doRetry bool
 		switch resp.StatusCode {
 		case http.StatusServiceUnavailable:
-			c.log.Debugf("service unavailable, retrying")
+			c.Log.Debugf("service unavailable, retrying")
 			doRetry = true
 			retries--
 		}
@@ -429,7 +484,7 @@ func (c *Client) doGetHeaders(req *http.Request, v interface{}) (http.Header, er
 	if c.apiVersion == defaultApiVersion && resp.Header.Get("X-Shopify-API-Version") != "" {
 		// if using stable on first request set the api version
 		c.apiVersion = resp.Header.Get("X-Shopify-API-Version")
-		c.log.Infof("api version not set, now using %s", c.apiVersion)
+		c.Log.Infof("api version not set, now using %s", c.apiVersion)
 	}
 
 	if v != nil {
@@ -441,36 +496,36 @@ func (c *Client) doGetHeaders(req *http.Request, v interface{}) (http.Header, er
 	}
 
 	if s := strings.Split(resp.Header.Get("X-Shopify-Shop-Api-Call-Limit"), "/"); len(s) == 2 {
-		c.RateLimits.RequestCount, _ = strconv.Atoi(s[0])
-		c.RateLimits.BucketSize, _ = strconv.Atoi(s[1])
+		c.GetRateLimits().RequestCount, _ = strconv.Atoi(s[0])
+		c.GetRateLimits().BucketSize, _ = strconv.Atoi(s[1])
 	}
 
-	c.RateLimits.RetryAfterSeconds, _ = strconv.ParseFloat(resp.Header.Get("Retry-After"), 64)
+	c.GetRateLimits().RetryAfterSeconds, _ = strconv.ParseFloat(resp.Header.Get("Retry-After"), 64)
 
 	return resp.Header, nil
 }
 
-func (c *Client) logRequest(req *http.Request) {
+func (c *ApiClient) logRequest(req *http.Request) {
 	if req == nil {
 		return
 	}
 	if req.URL != nil {
-		c.log.Debugf("%s: %s", req.Method, req.URL.String())
+		c.Log.Debugf("%s: %s", req.Method, req.URL.String())
 	}
 	c.logBody(&req.Body, "SENT: %s")
 }
 
-func (c *Client) logResponse(res *http.Response) {
+func (c *ApiClient) logResponse(res *http.Response) {
 	if res == nil {
 		return
 	}
 
-	c.log.Debugf("Shopify X-Request-Id: %s", res.Header.Get("X-Request-Id"))
-	c.log.Debugf("RECV %d: %s", res.StatusCode, res.Status)
+	c.Log.Debugf("Shopify X-Request-Id: %s", res.Header.Get("X-Request-Id"))
+	c.Log.Debugf("RECV %d: %s", res.StatusCode, res.Status)
 	c.logBody(&res.Body, "RESP: %s")
 }
 
-func (c *Client) logBody(body *io.ReadCloser, format string) {
+func (c *ApiClient) logBody(body *io.ReadCloser, format string) {
 	if body == nil {
 		return
 	}
@@ -479,7 +534,7 @@ func (c *Client) logBody(body *io.ReadCloser, format string) {
 		return
 	}
 	if len(b) > 0 {
-		c.log.Debugf(format, string(b))
+		c.Log.Debugf(format, string(b))
 	}
 	*body = ioutil.NopCloser(bytes.NewBuffer(b))
 }
@@ -631,6 +686,10 @@ type CountOptions struct {
 }
 
 func (c *Client) Count(ctx context.Context, path string, options interface{}) (int, error) {
+	return c.ApiClient.Count(ctx, path, options)
+}
+
+func (c *ApiClient) Count(ctx context.Context, path string, options interface{}) (int, error) {
 	resource := struct {
 		Count int `json:"count"`
 	}{}
@@ -648,6 +707,19 @@ func (c *Client) Count(ctx context.Context, path string, options interface{}) (i
 // parameters like created_at_min
 // Any data returned from Shopify will be marshalled into resource argument.
 func (c *Client) CreateAndDo(ctx context.Context, method, relPath string, data, options, resource interface{}) error {
+	return c.ApiClient.CreateAndDo(ctx, method, relPath, data, options, resource)
+}
+
+// CreateAndDo performs a web request to Shopify with the given method (GET,
+// POST, PUT, DELETE) and relative path (e.g. "/admin/orders.json").
+// The data, options and resource arguments are optional and only relevant in
+// certain situations.
+// If the data argument is non-nil, it will be used as the body of the request
+// for POST and PUT requests.
+// The options argument is used for specifying request options such as search
+// parameters like created_at_min
+// Any data returned from Shopify will be marshalled into resource argument.
+func (c *ApiClient) CreateAndDo(ctx context.Context, method, relPath string, data, options, resource interface{}) error {
 	_, err := c.createAndDoGetHeaders(ctx, method, relPath, data, options, resource)
 	if err != nil {
 		return err
@@ -656,13 +728,13 @@ func (c *Client) CreateAndDo(ctx context.Context, method, relPath string, data, 
 }
 
 // createAndDoGetHeaders creates an executes a request while returning the response headers.
-func (c *Client) createAndDoGetHeaders(ctx context.Context, method, relPath string, data, options, resource interface{}) (http.Header, error) {
+func (c *ApiClient) createAndDoGetHeaders(ctx context.Context, method, relPath string, data, options, resource interface{}) (http.Header, error) {
 	if strings.HasPrefix(relPath, "/") {
 		// make sure it's a relative path
 		relPath = strings.TrimLeft(relPath, "/")
 	}
 
-	relPath = path.Join(c.pathPrefix, relPath)
+	relPath = path.Join(c.PathPrefix, relPath)
 	req, err := c.NewRequest(ctx, method, relPath, data, options)
 	if err != nil {
 		return nil, err
@@ -674,12 +746,24 @@ func (c *Client) createAndDoGetHeaders(ctx context.Context, method, relPath stri
 // Get performs a GET request for the given path and saves the result in the
 // given resource.
 func (c *Client) Get(ctx context.Context, path string, resource, options interface{}) error {
+	return c.ApiClient.Get(ctx, path, resource, options)
+}
+
+// Get performs a GET request for the given path and saves the result in the
+// given resource.
+func (c *ApiClient) Get(ctx context.Context, path string, resource, options interface{}) error {
 	return c.CreateAndDo(ctx, "GET", path, nil, options, resource)
 }
 
 // ListWithPagination performs a GET request for the given path and saves the result in the
 // given resource and returns the pagination.
 func (c *Client) ListWithPagination(ctx context.Context, path string, resource, options interface{}) (*Pagination, error) {
+	return c.ApiClient.ListWithPagination(ctx, path, resource, options)
+}
+
+// ListWithPagination performs a GET request for the given path and saves the result in the
+// given resource and returns the pagination.
+func (c *ApiClient) ListWithPagination(ctx context.Context, path string, resource, options interface{}) (*Pagination, error) {
 	headers, err := c.createAndDoGetHeaders(ctx, "GET", path, nil, options, resource)
 	if err != nil {
 		return nil, err
@@ -764,21 +848,102 @@ func extractPagination(linkHeader string) (*Pagination, error) {
 // Post performs a POST request for the given path and saves the result in the
 // given resource.
 func (c *Client) Post(ctx context.Context, path string, data, resource interface{}) error {
+	return c.ApiClient.Post(ctx, path, data, resource)
+}
+
+// Post performs a POST request for the given path and saves the result in the
+// given resource.
+func (c *ApiClient) Post(ctx context.Context, path string, data, resource interface{}) error {
 	return c.CreateAndDo(ctx, "POST", path, data, nil, resource)
 }
 
 // Put performs a PUT request for the given path and saves the result in the
 // given resource.
 func (c *Client) Put(ctx context.Context, path string, data, resource interface{}) error {
+	return c.ApiClient.Put(ctx, path, data, resource)
+}
+
+// Put performs a PUT request for the given path and saves the result in the
+// given resource.
+func (c *ApiClient) Put(ctx context.Context, path string, data, resource interface{}) error {
 	return c.CreateAndDo(ctx, "PUT", path, data, nil, resource)
 }
 
 // Delete performs a DELETE request for the given path
 func (c *Client) Delete(ctx context.Context, path string) error {
+	return c.ApiClient.Delete(ctx, path)
+}
+
+// Delete performs a DELETE request for the given path
+func (c *ApiClient) Delete(ctx context.Context, path string) error {
 	return c.DeleteWithOptions(ctx, path, nil)
 }
 
 // DeleteWithOptions performs a DELETE request for the given path WithOptions
-func (c *Client) DeleteWithOptions(ctx context.Context, path string, options interface{}) error {
+func (c *ApiClient) DeleteWithOptions(ctx context.Context, path string, options interface{}) error {
 	return c.CreateAndDo(ctx, "DELETE", path, nil, options, nil)
+}
+
+func (c *ApiClient) SetHttpClient(client *http.Client) {
+	c.HttpClient = client
+}
+
+func (c *ApiClient) GetHttpClient() *http.Client {
+	return c.HttpClient
+}
+
+func (c *ApiClient) SetLogger(logger LeveledLoggerInterface) {
+	c.Log = logger
+}
+
+func (c *ApiClient) GetLogger() LeveledLoggerInterface {
+	return c.Log
+}
+
+func (c *ApiClient) SetBaseUrl(baseURL *url.URL) {
+	c.BaseURL = baseURL
+}
+
+func (c *ApiClient) GetBaseUrl() *url.URL {
+	return c.BaseURL
+}
+
+func (c *ApiClient) SetPathPrefix(pathPrefix string) {
+	c.PathPrefix = pathPrefix
+}
+
+func (c *ApiClient) GetPathPrefix() string {
+	return c.PathPrefix
+}
+
+func (c *ApiClient) SetApiVersion(apiVersion string) {
+	c.apiVersion = apiVersion
+}
+
+func (c *ApiClient) GetApiVersion() string {
+	return c.apiVersion
+}
+
+func (c *ApiClient) SetRetries(retries int) {
+	c.retries = retries
+}
+
+func (c *ApiClient) GetRetries() int {
+	return c.retries
+}
+
+func (c *ApiClient) SetAttempts(attempts int) {
+	c.attempts = attempts
+}
+
+func (c *ApiClient) GetAttempts() int {
+	return c.attempts
+}
+
+func (c *ApiClient) SetRateLimits(rateLimits *RateLimitInfo) {
+	c.RateLimits = rateLimits
+}
+
+func (c *ApiClient) GetRateLimits() *RateLimitInfo {
+	return c.RateLimits
 }

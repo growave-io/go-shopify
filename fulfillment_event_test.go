@@ -18,7 +18,7 @@ func TestFulfillmentEventServiceOp_List(t *testing.T) {
 	fulfillmentId := uint64(987654321)
 	httpmock.RegisterResponder(
 		http.MethodGet,
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/%d/fulfillments/%d/events.json", client.pathPrefix, orderId, fulfillmentId),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/%d/fulfillments/%d/events.json", client.ApiClient.GetPathPrefix(), orderId, fulfillmentId),
 		httpmock.NewBytesResponder(200, loadFixture("fulfillment_events.json")),
 	)
 
@@ -63,7 +63,7 @@ func TestFulfillmentEventServiceOp_Get(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		http.MethodGet,
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/%d/fulfillments/%d/events/%d.json", client.pathPrefix, orderId, fulfillmentId, eventId),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/%d/fulfillments/%d/events/%d.json", client.ApiClient.GetPathPrefix(), orderId, fulfillmentId, eventId),
 		httpmock.NewBytesResponder(200, loadFixture("fulfillment_event.json")),
 	)
 
@@ -105,7 +105,7 @@ func TestFulfillmentEventServiceOp_Create(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		http.MethodPost,
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/%d/fulfillments/%d/events.json", client.pathPrefix, orderId, fulfillmentId),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/%d/fulfillments/%d/events.json", client.ApiClient.GetPathPrefix(), orderId, fulfillmentId),
 		httpmock.NewBytesResponder(201, loadFixture("fulfillment_event.json")),
 	)
 
@@ -167,7 +167,7 @@ func TestFulfillmentEventServiceOp_Delete(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		http.MethodDelete,
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/%d/fulfillments/%d/events/%d.json", client.pathPrefix, orderId, fulfillmentId, eventId),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/orders/%d/fulfillments/%d/events/%d.json", client.ApiClient.GetPathPrefix(), orderId, fulfillmentId, eventId),
 		httpmock.NewStringResponder(200, ""),
 	)
 

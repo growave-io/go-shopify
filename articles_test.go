@@ -15,7 +15,7 @@ func TestArticleList(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/241253187/articles.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/241253187/articles.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			200,
 			`{"articles": [{"id":1},{"id":2}]}`,
@@ -46,7 +46,7 @@ func TestArticleCreate(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/241253187/articles.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/241253187/articles.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			201,
 			`{"article": {"id": 1}}`,
@@ -71,7 +71,7 @@ func TestArticleGet(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/241253187/articles/1.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/241253187/articles/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			200,
 			`{"article": {"id": 1, "title": "Test Article"}}`,
@@ -95,7 +95,7 @@ func TestArticleUpdate(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"PUT",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/241253187/articles/1.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/241253187/articles/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			200,
 			`{"article": {"id": 1, "title": "Updated Article"}}`,
@@ -120,7 +120,7 @@ func TestArticleDelete(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"DELETE",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/241253187/articles/1.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/241253187/articles/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			204, // No content response
 			``,
@@ -139,7 +139,7 @@ func TestArticleListTags(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/articles/tags.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/articles/tags.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			200,
 			`{"tags": ["tag1", "tag2"]}`,
@@ -163,7 +163,7 @@ func TestArticleCount(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/241253187/articles/count.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/241253187/articles/count.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			200,
 			`{"count": 2}`,
@@ -187,7 +187,7 @@ func TestArticleListBlogTags(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/241253187/articles/tags.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/blogs/241253187/articles/tags.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			200,
 			`{"tags": ["blogTag1", "blogTag2"]}`,

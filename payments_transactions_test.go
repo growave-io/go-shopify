@@ -16,7 +16,7 @@ func TestPaymentsTransactionsList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/balance/transactions.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/balance/transactions.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("payments_transactions.json")))
 	date1 := OnlyDate{time.Date(2013, 11, 0o1, 0, 0, 0, 0, time.UTC)}
 	paymentsTransactions, err := client.PaymentsTransactions.List(context.Background(), PaymentsTransactionsListOptions{PayoutId: 623721858})
@@ -83,7 +83,7 @@ func TestPaymentsTransactionsListIncorrectDate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/balance/transactions.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/balance/transactions.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"transactions": [{"id":1, "processed_at":"20-02-2"}]}`))
 
 	date1 := OnlyDate{time.Date(2022, 0o2, 0o3, 0, 0, 0, 0, time.Local)}
@@ -97,7 +97,7 @@ func TestPaymentsTransactionsListError(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/balance/transactions.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/balance/transactions.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(500, ""))
 
 	expectedErrMessage := "Unknown Error"
@@ -116,7 +116,7 @@ func TestPaymentsTransactionsListAll(t *testing.T) {
 	setup()
 	defer teardown()
 
-	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/balance/transactions.json", client.pathPrefix)
+	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/balance/transactions.json", client.ApiClient.GetPathPrefix())
 
 	cases := []struct {
 		name                          string
@@ -228,7 +228,7 @@ func TestPaymentsTransactionsListWithPagination(t *testing.T) {
 	setup()
 	defer teardown()
 
-	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/balance/transactions.json", client.pathPrefix)
+	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/balance/transactions.json", client.ApiClient.GetPathPrefix())
 	date1 := OnlyDate{time.Date(2013, 11, 0o1, 0, 0, 0, 0, time.UTC)}
 
 	cases := []struct {
@@ -392,7 +392,7 @@ func TestPaymentsTransactionsGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/balance/transactions/623721858.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/shopify_payments/balance/transactions/623721858.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("payments_transaction.json")))
 
 	paymentsTransactions, err := client.PaymentsTransactions.Get(context.Background(), 623721858, nil)

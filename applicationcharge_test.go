@@ -35,7 +35,7 @@ func applicationChargeTests(t *testing.T, charge ApplicationCharge) {
 		},
 		{
 			"ConfirmationURL",
-			fmt.Sprintf("https://apple.myshopify.com/%s/charges/1017262355/confirm_application_charge?signature=BAhpBBMxojw%%3D--1139a82a3433b1a6771786e03f02300440e11883", client.pathPrefix),
+			fmt.Sprintf("https://apple.myshopify.com/%s/charges/1017262355/confirm_application_charge?signature=BAhpBBMxojw%%3D--1139a82a3433b1a6771786e03f02300440e11883", client.ApiClient.GetPathPrefix()),
 			charge.ConfirmationURL,
 		},
 	}
@@ -53,7 +53,7 @@ func TestApplicationChargeServiceOp_Create(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/application_charges.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/application_charges.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("applicationcharge.json")),
 	)
 
@@ -78,7 +78,7 @@ func TestApplicationChargeServiceOp_Get(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/application_charges/1.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/application_charges/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"application_charge": {"id":1}}`),
 	)
 
@@ -99,7 +99,7 @@ func TestApplicationChargeServiceOp_List(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/application_charges.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/application_charges.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"application_charges": [{"id":1},{"id":2}]}`),
 	)
 
@@ -120,7 +120,7 @@ func TestApplicationChargeServiceOp_Activate(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/application_charges/455696195/activate.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/application_charges/455696195/activate.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			200,
 			`{"application_charge":{"id":455696195,"status":"active"}}`,

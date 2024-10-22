@@ -18,7 +18,7 @@ func TestFulfillmentRequestServiceOp_Send(t *testing.T) {
 	message := "Fulfill this ASAP please."
 	httpmock.RegisterResponder(
 		http.MethodPost,
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_orders/%d/fulfillment_request.json", client.pathPrefix, fulfillmentOrderId),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_orders/%d/fulfillment_request.json", client.ApiClient.GetPathPrefix(), fulfillmentOrderId),
 		httpmock.NewBytesResponder(200, loadFixture("fulfillment_send.json")),
 	)
 
@@ -96,7 +96,7 @@ func TestFulfillmentRequestServiceOp_Accept(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		http.MethodPost,
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_orders/%d/fulfillment_request/accept.json", client.pathPrefix, fulfillmentOrderId),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_orders/%d/fulfillment_request/accept.json", client.ApiClient.GetPathPrefix(), fulfillmentOrderId),
 		httpmock.NewBytesResponder(200, loadFixture("fulfillment_accept.json")),
 	)
 
@@ -173,7 +173,7 @@ func TestFulfillmentRequestServiceOp_Reject(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		http.MethodPost,
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_orders/%d/fulfillment_request/reject.json", client.pathPrefix, fulfillmentOrderId),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/fulfillment_orders/%d/fulfillment_request/reject.json", client.ApiClient.GetPathPrefix(), fulfillmentOrderId),
 		httpmock.NewBytesResponder(200, loadFixture("fulfillment_reject.json")),
 	)
 

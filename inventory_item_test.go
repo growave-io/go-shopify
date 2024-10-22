@@ -70,7 +70,7 @@ func TestInventoryItemsList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_items.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_items.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("inventory_items.json")))
 
 	items, err := client.InventoryItem.List(context.Background(), nil)
@@ -90,7 +90,7 @@ func TestInventoryItemsListWithIds(t *testing.T) {
 	}
 	httpmock.RegisterResponderWithQuery(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_items.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_items.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewBytesResponder(200, loadFixture("inventory_items.json")),
 	)
@@ -111,7 +111,7 @@ func TestInventoryItemGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_items/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_items/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("inventory_item.json")))
 
 	item, err := client.InventoryItem.Get(context.Background(), 1, nil)
@@ -126,7 +126,7 @@ func TestInventoryItemUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_items/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_items/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("inventory_item.json")))
 
 	item := InventoryItem{

@@ -56,7 +56,7 @@ func TestUsageChargeServiceOp_Create(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/recurring_application_charges/455696195/usage_charges.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/recurring_application_charges/455696195/usage_charges.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(
 			200, loadFixture("usagecharge.json"),
 		),
@@ -81,7 +81,7 @@ func TestUsageChargeServiceOp_Get(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/recurring_application_charges/455696195/usage_charges/1034618210.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/recurring_application_charges/455696195/usage_charges/1034618210.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(
 			200, loadFixture("usagecharge.json"),
 		),
@@ -101,7 +101,7 @@ func TestUsageChargeServiceOp_List(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/recurring_application_charges/455696195/usage_charges.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/recurring_application_charges/455696195/usage_charges.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(
 			200, loadFixture("usagecharges.json"),
 		),
@@ -126,7 +126,7 @@ func TestUsageChargeServiceOp_GetBadFields(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/recurring_application_charges/455696195/usage_charges/1034618210.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/recurring_application_charges/455696195/usage_charges/1034618210.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(
 			200, `{"usage_charge":{"id":"wrong_id_type"}}`,
 		),

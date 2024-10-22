@@ -45,7 +45,7 @@ func TestInventoryLevelsList(t *testing.T) {
 	defer teardown()
 
 	httpmock.RegisterResponder("GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("inventory_levels.json")))
 
 	levels, err := client.InventoryLevel.List(context.Background(), nil)
@@ -65,7 +65,7 @@ func TestInventoryLevelListWithItemId(t *testing.T) {
 	}
 	httpmock.RegisterResponderWithQuery(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewBytesResponder(200, loadFixture("inventory_levels.json")),
 	)
@@ -91,7 +91,7 @@ func TestInventoryLevelListWithLocationId(t *testing.T) {
 	}
 	httpmock.RegisterResponderWithQuery(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewBytesResponder(200, loadFixture("inventory_levels.json")),
 	)
@@ -113,7 +113,7 @@ func TestInventoryLevelAdjust(t *testing.T) {
 	defer teardown()
 
 	httpmock.RegisterResponder("POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels/adjust.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels/adjust.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("inventory_level.json")))
 
 	option := InventoryLevelAdjustOptions{
@@ -135,7 +135,7 @@ func TestInventoryLevelDelete(t *testing.T) {
 	defer teardown()
 
 	httpmock.RegisterResponder("DELETE",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, "{}"))
 
 	err := client.InventoryLevel.Delete(context.Background(), 1, 1)
@@ -150,7 +150,7 @@ func TestInventoryLevelConnect(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels/connect.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels/connect.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("inventory_level.json")),
 	)
 
@@ -173,7 +173,7 @@ func TestInventoryLevelSet(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels/set.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels/set.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("inventory_level.json")),
 	)
 
@@ -196,7 +196,7 @@ func TestInventoryLevelSetZero(t *testing.T) {
 
 	httpmock.RegisterResponder(
 		"POST",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels/set.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/inventory_levels/set.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("inventory_level.json")),
 	)
 

@@ -25,7 +25,7 @@ func TestProductListingList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"product_listings": [{"product_id":1},{"product_id":2}]}`))
 
 	products, err := client.ProductListing.List(context.Background(), nil)
@@ -43,7 +43,7 @@ func TestProductListingListError(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(500, ""))
 
 	expectedErrMessage := "Unknown Error"
@@ -62,7 +62,7 @@ func TestProductListingListAll(t *testing.T) {
 	setup()
 	defer teardown()
 
-	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings.json", client.pathPrefix)
+	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings.json", client.ApiClient.GetPathPrefix())
 
 	cases := []struct {
 		name                    string
@@ -174,7 +174,7 @@ func TestProductListingListWithPagination(t *testing.T) {
 	setup()
 	defer teardown()
 
-	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings.json", client.pathPrefix)
+	listURL := fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings.json", client.ApiClient.GetPathPrefix())
 
 	// The strconv.Atoi error changed in go 1.8, 1.7 is still being tested/supported.
 	limitConversionErrorMessage := `strconv.Atoi: parsing "invalid": invalid syntax`
@@ -294,13 +294,13 @@ func TestProductListingsCount(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings/count.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings/count.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"count": 3}`))
 
 	params := map[string]string{"created_at_min": "2016-01-01T00:00:00Z"}
 	httpmock.RegisterResponderWithQuery(
 		"GET",
-		fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings/count.json", client.pathPrefix),
+		fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings/count.json", client.ApiClient.GetPathPrefix()),
 		params,
 		httpmock.NewStringResponder(200, `{"count": 2}`))
 
@@ -330,7 +330,7 @@ func TestProductListingGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"product_listing": {"product_id":1}}`))
 
 	product, err := client.ProductListing.Get(context.Background(), 1, nil)
@@ -348,7 +348,7 @@ func TestProductListingGetProductIds(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings/product_ids.json", client.pathPrefix),
+	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings/product_ids.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, `{"product_ids": [1,2,3]}`))
 
 	productIds, err := client.ProductListing.GetProductIds(context.Background(), nil)
@@ -366,7 +366,7 @@ func TestProductListingPublish(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings/921728736.json", client.pathPrefix),
+	httpmock.RegisterResponder("PUT", fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings/921728736.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewBytesResponder(200, loadFixture("product_listing.json")))
 
 	product := Product{
@@ -386,7 +386,7 @@ func TestProductListingDelete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings/1.json", client.pathPrefix),
+	httpmock.RegisterResponder("DELETE", fmt.Sprintf("https://fooshop.myshopify.com/%s/product_listings/1.json", client.ApiClient.GetPathPrefix()),
 		httpmock.NewStringResponder(200, "{}"))
 
 	err := client.ProductListing.Delete(context.Background(), 1)
