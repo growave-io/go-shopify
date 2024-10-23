@@ -40,3 +40,9 @@ func WithHTTPClient(client *http.Client) Option {
 		c.Client = client
 	}
 }
+
+func WithAdditionalHeaders(headers map[string]string) Option {
+	return func(c *Client) {
+		c.additionalHeaders = headers
+	}
+}
