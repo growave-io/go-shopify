@@ -3,6 +3,7 @@ package goshopify
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 // Option is used to configure client with options
@@ -38,5 +39,21 @@ func WithLogger(logger LeveledLoggerInterface) Option {
 func WithHTTPClient(client *http.Client) Option {
 	return func(c *Client) {
 		c.Client = client
+	}
+}
+
+func WithAdditionalHeaders(headers map[string]string) Option {
+	return func(c *Client) {
+		c.additionalHeaders = headers
+	}
+}
+
+func WithBaseUrl(baseUrl string) Option {
+	return func(c *Client) {
+		baseUrl, err := url.Parse(baseUrl)
+		if err != nil {
+			panic(err)
+		}
+		c.baseURL = baseUrl
 	}
 }

@@ -83,6 +83,8 @@ type Client struct {
 
 	RateLimits RateLimitInfo
 
+	additionalHeaders map[string]string
+
 	// Services used for communicating with the API
 	Product                    ProductService
 	CustomCollection           CustomCollectionService
@@ -244,6 +246,12 @@ func (c *Client) NewRequest(ctx context.Context, method, relPath string, body, o
 		req.Header.Add("X-Shopify-Access-Token", c.token)
 	} else if c.app.Password != "" {
 		req.SetBasicAuth(c.app.ApiKey, c.app.Password)
+	}
+
+	if len(c.additionalHeaders) > 0 {
+		for k, v := range c.additionalHeaders {
+			req.Header.Add(k, v)
+		}
 	}
 
 	return req, nil
