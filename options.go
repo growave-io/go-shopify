@@ -1,8 +1,9 @@
 package goshopify
 
 import (
-	"fmt"
-	"net/http"
+    "fmt"
+    "net/http"
+    "net/url"
 )
 
 // Option is used to configure client with options
@@ -10,39 +11,49 @@ type Option func(c *Client)
 
 // WithVersion optionally sets the api-version if the passed string is valid
 func WithVersion(apiVersion string) Option {
-	return func(c *Client) {
-		pathPrefix := defaultApiPathPrefix
-		if len(apiVersion) > 0 && (apiVersionRegex.MatchString(apiVersion) || apiVersion == UnstableApiVersion) {
-			pathPrefix = fmt.Sprintf("admin/api/%s", apiVersion)
-		}
-		c.apiVersion = apiVersion
-		c.pathPrefix = pathPrefix
-	}
+    return func(c *Client) {
+        pathPrefix := defaultApiPathPrefix
+        if len(apiVersion) > 0 && (apiVersionRegex.MatchString(apiVersion) || apiVersion == UnstableApiVersion) {
+            pathPrefix = fmt.Sprintf("admin/api/%s", apiVersion)
+        }
+        c.apiVersion = apiVersion
+        c.pathPrefix = pathPrefix
+    }
 }
 
 // WithRetry sets the number of times a request will be retried if a rate limit or service unavailable error is returned.
 // Rate limiting can be either REST API limits or GraphQL Cost limits
 func WithRetry(retries int) Option {
-	return func(c *Client) {
-		c.retries = retries
-	}
+    return func(c *Client) {
+        c.retries = retries
+    }
 }
 
 func WithLogger(logger LeveledLoggerInterface) Option {
-	return func(c *Client) {
-		c.log = logger
-	}
+    return func(c *Client) {
+        c.log = logger
+    }
 }
 
 // WithHTTPClient is used to set a custom http client
 func WithHTTPClient(client *http.Client) Option {
-	return func(c *Client) {
-		c.Client = client
-	}
+    return func(c *Client) {
+        c.Client = client
+    }
 }
 
 func WithAdditionalHeaders(headers map[string]string) Option {
-	return func(c *Client) {
-		c.additionalHeaders = headers
-	}
+    return func(c *Client) {
+        c.additionalHeaders = headers
+    }
+}
+
+func WithBaseUrl(baseUrl string) Option {
+    return func(c *Client) {
+        baseUrl, err := url.Parse(baseUrl)
+        if err != nil {
+            panic(err)
+        }
+        c.baseURL = baseUrl
+    }
 }
